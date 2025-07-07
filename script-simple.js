@@ -17,7 +17,7 @@ const tariffs = {
     china: { speakers: 0.30, iport: 0.30, amplifiers: 0.30 },
     vietnam: { speakers: 0.20, iport: 0.20, amplifiers: 0.20 },
     thailand: { speakers: 0.18, iport: 0.18, amplifiers: 0.18 },
-    cambodia: { speakers: 0.08, iport: 0.10, amplifiers: 0.08 }
+    cambodia: { speakers: 0.00, iport: 0.00, amplifiers: 0.00 }
 };
 
 // Manufacturing premiums
