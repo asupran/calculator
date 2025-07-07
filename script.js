@@ -210,14 +210,6 @@ const tariffAmountSpan = document.getElementById('tariff-amount');
 const totalCostSpan = document.getElementById('total-cost');
 const tariffExplanationP = document.getElementById('tariff-explanation');
 
-// Simplified event listeners
-productSelector.addEventListener('change', loadProductDataSimple);
-
-// Country buttons
-document.querySelectorAll('.country-btn').forEach(btn => {
-    btn.addEventListener('click', () => selectCountry(btn.dataset.country));
-});
-
 let currentProduct = null;
 let selectedCountry = null;
 
@@ -545,7 +537,10 @@ function generateRecommendations(category, currentMix, tariffRate) {
 }
 
 function loadProductDataSimple() {
+    const productSelector = document.getElementById('product-selector');
     const productName = productSelector.value;
+    console.log('loadProductDataSimple called with:', productName);
+    
     if (!productName || !productData[productName]) {
         currentProduct = null;
         hideSimpleResults();
@@ -553,6 +548,7 @@ function loadProductDataSimple() {
     }
     
     currentProduct = productData[productName];
+    console.log('Product loaded:', currentProduct);
     updateCountryButtons();
     
     // If a country is already selected, calculate immediately
@@ -562,17 +558,24 @@ function loadProductDataSimple() {
 }
 
 function selectCountry(country) {
+    console.log('selectCountry called with:', country);
     selectedCountry = country;
     
     // Update button states
     document.querySelectorAll('.country-btn').forEach(btn => {
         btn.classList.remove('selected');
     });
-    document.querySelector(`[data-country="${country}"]`).classList.add('selected');
+    const selectedBtn = document.querySelector(`[data-country="${country}"]`);
+    if (selectedBtn) {
+        selectedBtn.classList.add('selected');
+    }
     
     // Calculate if we have a product
     if (currentProduct) {
+        console.log('Calculating for product:', currentProduct);
         calculateSimple();
+    } else {
+        console.log('No product selected yet');
     }
 }
 
@@ -694,4 +697,17 @@ function hideSimpleResults() {
 document.addEventListener('DOMContentLoaded', function() {
     // Add smooth scrolling for better UX
     document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Re-attach event listeners after DOM is loaded
+    const productSelector = document.getElementById('product-selector');
+    if (productSelector) {
+        productSelector.addEventListener('change', loadProductDataSimple);
+    }
+    
+    // Re-attach country button listeners
+    document.querySelectorAll('.country-btn').forEach(btn => {
+        btn.addEventListener('click', () => selectCountry(btn.dataset.country));
+    });
+    
+    console.log('Tariff calculator initialized');
 });
