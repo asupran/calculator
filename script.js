@@ -10,7 +10,7 @@ const productData = {
         asp: 212.49,
         msrp: 550,
         unit: 'pair',
-        tariffRate: 0.375
+        tariffRate: 0.30
     },
     'IS6': {
         sku: '93478',
@@ -20,7 +20,7 @@ const productData = {
         asp: 570.44,
         msrp: 1515,
         unit: 'pair',
-        tariffRate: 0.375
+        tariffRate: 0.30
     },
     'PS-C63RT WHITE EA': {
         sku: '45131',
@@ -30,7 +30,7 @@ const productData = {
         asp: 137.26,
         msrp: 235,
         unit: 'each',
-        tariffRate: 0.375
+        tariffRate: 0.30
     },
     'CONNECT PRO MINI CASE': {
         sku: '72329',
@@ -40,7 +40,7 @@ const productData = {
         asp: 196.16,
         msrp: 300,
         unit: 'each',
-        tariffRate: 0.55
+        tariffRate: 0.30
     },
     'C-PRO UTILITY CASE 11PRO M4 GN': {
         sku: '72494',
@@ -50,7 +50,7 @@ const productData = {
         asp: 215.00,
         msrp: 250,
         unit: 'each',
-        tariffRate: 0.55
+        tariffRate: 0.30
     },
     'CONNECT MOUNT Case iPad A16 BK': {
         sku: '72496',
@@ -60,7 +60,7 @@ const productData = {
         asp: 78.26,
         msrp: 125,
         unit: 'each',
-        tariffRate: 0.55
+        tariffRate: 0.30
     },
     'UA 2-125 DSP AMPLIFIER': {
         sku: '93550',
@@ -70,7 +70,7 @@ const productData = {
         asp: 484.00,
         msrp: 1100,
         unit: 'each',
-        tariffRate: 0.55
+        tariffRate: 0.30
     },
     'DSP 8-130 MKIII': {
         sku: '93538',
@@ -80,7 +80,7 @@ const productData = {
         asp: 1709.88,
         msrp: 3740,
         unit: 'each',
-        tariffRate: 0.55
+        tariffRate: 0.30
     }
 };
 
@@ -91,39 +91,39 @@ const categoryData = {
         totalCogs2025: 14938000,
         totalRevenue2025: 46027000,
         countryMix: { china: 0.85, vietnam: 0.15 },
-        tariffRate: 0.375  // 7.5% (301) + 30% = 37.5%
+        tariffRate: 0.30  // 30% (10% reciprocal + 20% fentanyl)
     },
     'iport': {
         hts: ['8473.30.5100'],
         totalCogs2025: 6228000,
         totalRevenue2025: 15279000,
         countryMix: { china: 0.80, cambodia: 0.20 },
-        tariffRate: 0.55  // 25% (301) + 30% = 55%
+        tariffRate: 0.30  // 30% (10% reciprocal + 20% fentanyl)
     },
     'amplifiers': {
         hts: ['8518.40.2000'],
         totalCogs2025: 3171000,
         totalRevenue2025: 7487000,
         countryMix: { china: 0.15, thailand: 0.85 },
-        tariffRate: 0.55  // 25% (301) + 30% = 55%
+        tariffRate: 0.30  // 30% (10% reciprocal + 20% fentanyl)
     }
 };
 
-// Updated tariff rates: China = 301 tariffs + 30% additional
+// Updated tariff rates from official projections (July 9, 2025)
 const tariffRates = {
     china: {
-        speakers: 0.375,        // 7.5% (301) + 30% = 37.5%
-        iport: 0.55,           // 25% (301) + 30% = 55%  
-        amplifiers: 0.55,      // 25% (301) + 30% = 55%
-        electronics: 0.55,     // 25% (301) + 30% = 55%
-        other: 0.375           // 7.5% (301) + 30% = 37.5%
+        speakers: 0.30,         // 30% (10% reciprocal + 20% fentanyl)
+        iport: 0.30,           // 30% (10% reciprocal + 20% fentanyl)
+        amplifiers: 0.30,      // 30% (10% reciprocal + 20% fentanyl)
+        electronics: 0.30,     // 30% (10% reciprocal + 20% fentanyl)
+        other: 0.30            // 30% (10% reciprocal + 20% fentanyl)
     },
     thailand: {
-        speakers: 0.00,         // No tariff
-        iport: 0.00,           // No tariff
-        amplifiers: 0.00,      // No tariff
-        electronics: 0.00,     // No tariff
-        other: 0.00            // No tariff
+        speakers: 0.18,         // 18% (most likely outcome)
+        iport: 0.18,           // 18% (most likely outcome)
+        amplifiers: 0.18,      // 18% (most likely outcome)
+        electronics: 0.18,     // 18% (most likely outcome)
+        other: 0.18            // 18% (most likely outcome)
     },
     vietnam: {
         speakers: 0.20,         // 20% tariff rate
