@@ -15,93 +15,71 @@
 
         <main>
             <div class="calculator-form">
-                <div class="quick-analysis">
-                    <h3>🚀 Quick Analysis</h3>
-                    <div class="preset-buttons">
-                        <button type="button" class="preset-btn" data-product="VX62R">VX62R Speakers</button>
-                        <button type="button" class="preset-btn" data-product="IS6">IS6 Speakers</button>
-                        <button type="button" class="preset-btn" data-product="CONNECT PRO MINI CASE">iPort Connect Pro</button>
-                        <button type="button" class="preset-btn" data-product="UA 2-125 DSP AMPLIFIER">UA 2-125 Amp</button>
-                        <button type="button" class="preset-btn" data-product="DSP 8-130 MKIII">DSP 8-130 MKIII</button>
-                    </div>
-                    <p class="preset-hint">Click a product above to load real pricing data, or enter custom values below</p>
-                </div>
-
-                <div class="input-group">
-                    <label for="product-selector">Select Your Product (Optional)</label>
-                    <select id="product-selector">
-                        <option value="">Choose from your portfolio...</option>
-                        <option value="VX62R">VX62R - $550 MSRP Speakers</option>
-                        <option value="IS6">IS6 - $1,515 MSRP Speakers</option>
-                        <option value="PS-C63RT WHITE EA">PS-C63RT - $235 MSRP Speakers</option>
-                        <option value="CONNECT PRO MINI CASE">Connect Pro Mini Case - $300 MSRP</option>
-                        <option value="C-PRO UTILITY CASE 11PRO M4 GN">C-Pro Utility Case - $250 MSRP</option>
-                        <option value="CONNECT MOUNT Case iPad A16 BK">Connect Mount Case - $125 MSRP</option>
-                        <option value="UA 2-125 DSP AMPLIFIER">UA 2-125 DSP Amplifier - $1,100 MSRP</option>
-                        <option value="DSP 8-130 MKIII">DSP 8-130 MKIII - $3,740 MSRP</option>
+                <div class="simple-selector">
+                    <h3>Select Your Product</h3>
+                    <select id="product-selector" class="large-select">
+                        <option value="">Choose a product to analyze...</option>
+                        <option value="VX62R">VX62R Speakers ($550 MSRP)</option>
+                        <option value="IS6">IS6 Speakers ($1,515 MSRP)</option>
+                        <option value="PS-C63RT WHITE EA">PS-C63RT Speakers ($235 MSRP)</option>
+                        <option value="CONNECT PRO MINI CASE">Connect Pro Mini Case ($300 MSRP)</option>
+                        <option value="C-PRO UTILITY CASE 11PRO M4 GN">C-Pro Utility Case ($250 MSRP)</option>
+                        <option value="CONNECT MOUNT Case iPad A16 BK">Connect Mount Case ($125 MSRP)</option>
+                        <option value="UA 2-125 DSP AMPLIFIER">UA 2-125 DSP Amplifier ($1,100 MSRP)</option>
+                        <option value="DSP 8-130 MKIII">DSP 8-130 MKIII ($3,740 MSRP)</option>
                     </select>
                 </div>
 
-                <div class="input-group">
-                    <label for="product-value">Product Value (USD)</label>
-                    <input type="number" id="product-value" placeholder="Enter value or select product above" min="0" step="0.01">
-                    <div class="value-buttons">
-                        <button type="button" class="value-btn" data-type="cogs">Use COGS</button>
-                        <button type="button" class="value-btn" data-type="asp">Use ASP</button>
-                        <button type="button" class="value-btn" data-type="msrp">Use MSRP</button>
+                <div class="simple-country">
+                    <h3>Country of Origin</h3>
+                    <div class="country-buttons">
+                        <button type="button" class="country-btn" data-country="china">🇨🇳 China<br><span class="tariff-rate">60% Tariff</span></button>
+                        <button type="button" class="country-btn" data-country="vietnam">🇻🇳 Vietnam<br><span class="tariff-rate">35% Tariff</span></button>
+                        <button type="button" class="country-btn" data-country="thailand">🇹🇭 Thailand<br><span class="tariff-rate">0% Tariff</span></button>
+                        <button type="button" class="country-btn" data-country="cambodia">🇰🇭 Cambodia<br><span class="tariff-rate">0% Tariff</span></button>
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <label for="country-origin">Country of Origin</label>
-                    <select id="country-origin">
-                        <option value="">Select country</option>
-                        <option value="china">China</option>
-                        <option value="thailand">Thailand</option>
-                        <option value="vietnam">Vietnam</option>
-                        <option value="cambodia">Cambodia</option>
-                        <option value="mexico">Mexico</option>
-                        <option value="canada">Canada</option>
-                        <option value="germany">Germany</option>
-                        <option value="japan">Japan</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label for="product-category">Product Category</label>
-                    <select id="product-category">
-                        <option value="">Select category</option>
-                        <option value="speakers">Speakers (HTS 8518.22/8518.21)</option>
-                        <option value="iport">iPort Cases (HTS 8473.30.5100)</option>
-                        <option value="amplifiers">Amplifiers (HTS 8518.40.2000)</option>
-                        <option value="electronics">Other Audio Electronics</option>
-                        <option value="other">Other Products</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label for="trade-agreement">Trade Agreement</label>
-                    <select id="trade-agreement">
-                        <option value="none">No Agreement</option>
-                        <option value="usmca">USMCA (US-Mexico-Canada)</option>
-                        <option value="mfn">Most Favored Nation (MFN)</option>
-                        <option value="gsp">Generalized System of Preferences</option>
-                    </select>
-                </div>
-
-                <button type="button" id="calculate-btn">Calculate Tariff</button>
-                
-                <div class="advanced-options">
-                    <details>
-                        <summary>Advanced: Show Weighted Tariff Rate</summary>
-                        <p>Calculate blended tariff rate based on typical sourcing mix for this product category</p>
-                        <button type="button" id="weighted-calc-btn">Show Weighted Rate</button>
-                    </details>
+                <div id="results-simple" class="results-simple" style="display: none;">
+                    <h3>Tariff Impact</h3>
+                    <div class="impact-summary">
+                        <div class="cost-breakdown">
+                            <div class="cost-row">
+                                <span>Product Cost:</span>
+                                <span id="product-cost">$0.00</span>
+                            </div>
+                            <div class="cost-row tariff-cost">
+                                <span>Tariff Cost:</span>
+                                <span id="tariff-cost">$0.00</span>
+                            </div>
+                            <div class="cost-row total-cost">
+                                <span>Total Cost:</span>
+                                <span id="total-cost-simple">$0.00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="quick-scenarios">
+                            <h4>Quick Comparison</h4>
+                            <div class="scenario-grid">
+                                <div class="scenario-card">
+                                    <div class="scenario-title">China</div>
+                                    <div class="scenario-cost" id="china-cost">$0</div>
+                                </div>
+                                <div class="scenario-card">
+                                    <div class="scenario-title">Vietnam</div>
+                                    <div class="scenario-cost" id="vietnam-cost">$0</div>
+                                </div>
+                                <div class="scenario-card">
+                                    <div class="scenario-title">Thailand</div>
+                                    <div class="scenario-cost" id="thailand-cost">$0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="results" id="results" style="display: none;">
+            <div class="results" id="results" style="display: none !important;">
                 <h2>Calculation Results</h2>
                 
                 <div class="result-row">

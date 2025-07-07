@@ -210,22 +210,16 @@ const tariffAmountSpan = document.getElementById('tariff-amount');
 const totalCostSpan = document.getElementById('total-cost');
 const tariffExplanationP = document.getElementById('tariff-explanation');
 
-// Event listeners
-calculateBtn.addEventListener('click', calculateTariff);
-weightedCalcBtn.addEventListener('click', calculateWeightedTariff);
-productSelector.addEventListener('change', loadProductData);
+// Simplified event listeners
+productSelector.addEventListener('change', loadProductDataSimple);
 
-// Preset product buttons
-document.querySelectorAll('.preset-btn').forEach(btn => {
-    btn.addEventListener('click', () => loadProductData(btn.dataset.product));
-});
-
-// Value type buttons (COGS, ASP, MSRP)
-document.querySelectorAll('.value-btn').forEach(btn => {
-    btn.addEventListener('click', () => setValueType(btn.dataset.type));
+// Country buttons
+document.querySelectorAll('.country-btn').forEach(btn => {
+    btn.addEventListener('click', () => selectCountry(btn.dataset.country));
 });
 
 let currentProduct = null;
+let selectedCountry = null;
 
 // Allow Enter key to trigger calculation
 document.addEventListener('keypress', function(e) {
@@ -550,15 +544,85 @@ function generateRecommendations(category, currentMix, tariffRate) {
     recommendationsDiv.innerHTML = recommendations.map(rec => `<p>${rec}</p>`).join('');
 }
 
+function loadProductDataSimple() {
+    const productName = productSelector.value;
+    if (!productName || !productData[productName]) {
+        currentProduct = null;
+        hideSimpleResults();
+        return;
+    }
+    
+    currentProduct = productData[productName];
+    updateCountryButtons();
+    
+    // If a country is already selected, calculate immediately
+    if (selectedCountry) {
+        calculateSimple();
+    }
+}
+
+function selectCountry(country) {
+    selectedCountry = country;
+    
+    // Update button states
+    document.querySelectorAll('.country-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    document.querySelector(`[data-country="${country}"]`).classList.add('selected');
+    
+    // Calculate if we have a product
+    if (currentProduct) {
+        calculateSimple();
+    }
+}
+
+function calculateSimple() {
+    if (!currentProduct || !selectedCountry) return;
+    
+    const productCost = currentProduct.cogs;
+    const tariffRate = tariffRates[selectedCountry][currentProduct.category] || 0;
+    const tariffCost = productCost * tariffRate;
+    const totalCost = productCost + tariffCost;
+    
+    // Update display
+    document.getElementById('product-cost').textContent = formatCurrency(productCost);
+    document.getElementById('tariff-cost').textContent = formatCurrency(tariffCost);
+    document.getElementById('total-cost-simple').textContent = formatCurrency(totalCost);
+    
+    // Show comparison across all countries
+    updateComparisonGrid();
+    
+    // Show results
+    document.getElementById('results-simple').style.display = 'block';
+}
+
+function updateComparisonGrid() {
+    if (!currentProduct) return;
+    
+    const countries = ['china', 'vietnam', 'thailand'];
+    const productCost = currentProduct.cogs;
+    
+    countries.forEach(country => {
+        const tariffRate = tariffRates[country][currentProduct.category] || 0;
+        const totalCost = productCost * (1 + tariffRate);
+        document.getElementById(`${country}-cost`).textContent = formatCurrency(totalCost);
+    });
+}
+
+function updateCountryButtons() {
+    // Remove any existing highlights
+    document.querySelectorAll('.country-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    selectedCountry = null;
+}
+
+function hideSimpleResults() {
+    document.getElementById('results-simple').style.display = 'none';
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    // Set default values if needed
-    productValueInput.value = '';
-    hideResults();
-    
     // Add smooth scrolling for better UX
     document.documentElement.style.scrollBehavior = 'smooth';
-    
-    // Update value buttons initially
-    updateValueButtons();
 });
