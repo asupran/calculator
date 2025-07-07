@@ -1,0 +1,236 @@
+/* Tariff Calculator Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+header {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    padding: 40px 30px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+header p {
+    font-size: 1.1em;
+    opacity: 0.9;
+}
+
+main {
+    padding: 40px 30px;
+}
+
+.calculator-form {
+    display: grid;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1em;
+}
+
+input[type="number"],
+select {
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+input[type="number"]:focus,
+select:focus {
+    outline: none;
+    border-color: #3498db;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+input[type="number"]:hover,
+select:hover {
+    border-color: #bdc3c7;
+}
+
+#calculate-btn {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    border: none;
+    padding: 18px 30px;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+#calculate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3);
+}
+
+#calculate-btn:active {
+    transform: translateY(0);
+}
+
+.results {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 30px;
+    margin-top: 30px;
+    border: 1px solid #e9ecef;
+}
+
+.results h2 {
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+}
+
+.result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.result-row:last-child {
+    border-bottom: none;
+}
+
+.result-row.total {
+    background: #e8f5e8;
+    margin: 15px -15px -15px -15px;
+    padding: 20px 15px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.1em;
+}
+
+.label {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.value {
+    color: #27ae60;
+    font-weight: 700;
+    font-size: 1.1em;
+}
+
+.result-row.total .value {
+    color: #2c3e50;
+}
+
+.additional-info {
+    margin-top: 25px;
+    padding: 20px;
+    background: #fff3cd;
+    border-radius: 10px;
+    border-left: 4px solid #ffc107;
+}
+
+.additional-info h3 {
+    color: #856404;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.additional-info p {
+    color: #856404;
+    line-height: 1.6;
+}
+
+footer {
+    background: #2c3e50;
+    color: white;
+    padding: 20px 30px;
+    text-align: center;
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        border-radius: 15px;
+    }
+    
+    header {
+        padding: 30px 20px;
+    }
+    
+    header h1 {
+        font-size: 2em;
+    }
+    
+    main {
+        padding: 30px 20px;
+    }
+    
+    .results {
+        padding: 20px;
+    }
+    
+    .result-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .result-row.total {
+        margin: 15px -10px -10px -10px;
+        padding: 15px 10px;
+    }
+}
+
+/* Animation for results appearing */
+.results {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

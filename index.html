@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tariff Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌍 Tariff Calculator</h1>
+            <p>Calculate import duties and taxes for international trade</p>
+        </header>
+
+        <main>
+            <div class="calculator-form">
+                <div class="input-group">
+                    <label for="product-value">Product Value (USD)</label>
+                    <input type="number" id="product-value" placeholder="Enter product value" min="0" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label for="country-origin">Country of Origin</label>
+                    <select id="country-origin">
+                        <option value="">Select country</option>
+                        <option value="china">China</option>
+                        <option value="mexico">Mexico</option>
+                        <option value="canada">Canada</option>
+                        <option value="germany">Germany</option>
+                        <option value="japan">Japan</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="product-category">Product Category</label>
+                    <select id="product-category">
+                        <option value="">Select category</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="textiles">Textiles & Apparel</option>
+                        <option value="automotive">Automotive Parts</option>
+                        <option value="machinery">Machinery</option>
+                        <option value="steel">Steel & Aluminum</option>
+                        <option value="solar">Solar Panels</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="trade-agreement">Trade Agreement</label>
+                    <select id="trade-agreement">
+                        <option value="none">No Agreement</option>
+                        <option value="usmca">USMCA (US-Mexico-Canada)</option>
+                        <option value="mfn">Most Favored Nation (MFN)</option>
+                        <option value="gsp">Generalized System of Preferences</option>
+                    </select>
+                </div>
+
+                <button type="button" id="calculate-btn">Calculate Tariff</button>
+            </div>
+
+            <div class="results" id="results" style="display: none;">
+                <h2>Calculation Results</h2>
+                
+                <div class="result-row">
+                    <span class="label">Product Value:</span>
+                    <span class="value" id="original-value">$0.00</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="label">Tariff Rate:</span>
+                    <span class="value" id="tariff-rate">0%</span>
+                </div>
+                
+                <div class="result-row">
+                    <span class="label">Tariff Amount:</span>
+                    <span class="value" id="tariff-amount">$0.00</span>
+                </div>
+                
+                <div class="result-row total">
+                    <span class="label">Total Cost (Product + Tariff):</span>
+                    <span class="value" id="total-cost">$0.00</span>
+                </div>
+
+                <div class="additional-info">
+                    <h3>Additional Information</h3>
+                    <p id="tariff-explanation">Tariff calculations are based on current US trade policies and may vary.</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>⚠️ This calculator provides estimates based on general tariff rates. Consult official trade authorities for precise calculations.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
