@@ -17,7 +17,7 @@ const tariffs = {
     china: { speakers: 0.30, iport: 0.30, amplifiers: 0.30 },
     vietnam: { speakers: 0.20, iport: 0.20, amplifiers: 0.20 },
     thailand: { speakers: 0.18, iport: 0.18, amplifiers: 0.18 },
-    cambodia: { speakers: 0.00, iport: 0.00, amplifiers: 0.00 }
+    cambodia: { speakers: 0.25, iport: 0.25, amplifiers: 0.25 }
 };
 
 // Manufacturing premiums
@@ -76,6 +76,14 @@ window.addEventListener('load', function() {
     if (absorbBtn) {
         absorbBtn.addEventListener('click', function() {
             showPricingStrategy('absorb');
+        });
+    }
+    
+    // Show math button
+    const showMathBtn = document.getElementById('show-math');
+    if (showMathBtn) {
+        showMathBtn.addEventListener('click', function() {
+            showDetailedMath();
         });
     }
     
@@ -306,4 +314,86 @@ function showPricingStrategy(strategy) {
         newMarginPercent,
         priceIncrease
     });
+}
+
+function showDetailedMath() {
+    if (!currentProduct || !currentCountry || !currentTotalCost) {
+        console.log('Missing data for math breakdown');
+        return;
+    }
+    
+    const baseCogs = currentProduct.cogs;
+    const premium = premiums[currentCountry] || 0;
+    const tariffRate = tariffs[currentCountry][currentProduct.category] || 0;
+    
+    // Calculate step by step
+    const adjustedCogs = baseCogs * (1 + premium);
+    const tariffCost = adjustedCogs * tariffRate;
+    const totalCost = adjustedCogs + tariffCost;
+    
+    // Build math explanation
+    let mathHtml = '<div class="math-step-by-step">';
+    
+    mathHtml += '<div class="math-step">';
+    mathHtml += '<div class="step-title">📊 Step 1: Base COGS (China Baseline)</div>';
+    mathHtml += '<div class="step-calc">Base COGS = $' + baseCogs.toFixed(2) + '</div>';
+    mathHtml += '</div>';
+    
+    if (premium > 0) {
+        const premiumCost = adjustedCogs - baseCogs;
+        mathHtml += '<div class="math-step">';
+        mathHtml += '<div class="step-title">🏭 Step 2: Manufacturing Premium (' + currentCountry.toUpperCase() + ')</div>';
+        mathHtml += '<div class="step-calc">Premium = ' + (premium * 100).toFixed(1) + '% of Base COGS</div>';
+        mathHtml += '<div class="step-calc">Premium Cost = $' + baseCogs.toFixed(2) + ' × ' + (premium * 100).toFixed(1) + '% = $' + premiumCost.toFixed(2) + '</div>';
+        mathHtml += '<div class="step-calc">Adjusted COGS = $' + baseCogs.toFixed(2) + ' + $' + premiumCost.toFixed(2) + ' = $' + adjustedCogs.toFixed(2) + '</div>';
+        mathHtml += '</div>';
+    } else {
+        mathHtml += '<div class="math-step">';
+        mathHtml += '<div class="step-title">🏭 Step 2: Manufacturing Premium (CHINA)</div>';
+        mathHtml += '<div class="step-calc">No premium (China baseline) = $0.00</div>';
+        mathHtml += '<div class="step-calc">Adjusted COGS = $' + baseCogs.toFixed(2) + '</div>';
+        mathHtml += '</div>';
+    }
+    
+    mathHtml += '<div class="math-step">';
+    mathHtml += '<div class="step-title">💰 Step 3: Tariff Calculation</div>';
+    mathHtml += '<div class="step-calc">Tariff Rate = ' + (tariffRate * 100).toFixed(1) + '%</div>';
+    mathHtml += '<div class="step-calc">Tariff Cost = $' + adjustedCogs.toFixed(2) + ' × ' + (tariffRate * 100).toFixed(1) + '% = $' + tariffCost.toFixed(2) + '</div>';
+    mathHtml += '</div>';
+    
+    mathHtml += '<div class="math-step final-step">';
+    mathHtml += '<div class="step-title">🎯 Final Total Cost</div>';
+    mathHtml += '<div class="step-calc">Total = Adjusted COGS + Tariff Cost</div>';
+    mathHtml += '<div class="step-calc">Total = $' + adjustedCogs.toFixed(2) + ' + $' + tariffCost.toFixed(2) + ' = $' + totalCost.toFixed(2) + '</div>';
+    mathHtml += '</div>';
+    
+    // Add comparison with China
+    if (currentCountry !== 'china') {
+        const chinaBaseCogs = baseCogs;
+        const chinaTariffRate = tariffs.china[currentProduct.category];
+        const chinaTariffCost = chinaBaseCogs * chinaTariffRate;
+        const chinaTotalCost = chinaBaseCogs + chinaTariffCost;
+        const costDifference = totalCost - chinaTotalCost;
+        
+        mathHtml += '<div class="math-step comparison-step">';
+        mathHtml += '<div class="step-title">📈 vs China Comparison</div>';
+        mathHtml += '<div class="step-calc">China Total = $' + chinaBaseCogs.toFixed(2) + ' + ($' + chinaBaseCogs.toFixed(2) + ' × ' + (chinaTariffRate * 100).toFixed(1) + '%) = $' + chinaTotalCost.toFixed(2) + '</div>';
+        mathHtml += '<div class="step-calc">Difference = $' + totalCost.toFixed(2) + ' - $' + chinaTotalCost.toFixed(2) + ' = ' + (costDifference >= 0 ? '+$' : '-$') + Math.abs(costDifference).toFixed(2) + '</div>';
+        mathHtml += '<div class="step-calc">' + currentCountry.charAt(0).toUpperCase() + currentCountry.slice(1) + ' is ' + (costDifference >= 0 ? Math.abs(costDifference).toFixed(2) + ' MORE expensive' : Math.abs(costDifference).toFixed(2) + ' LESS expensive') + ' than China</div>';
+        mathHtml += '</div>';
+    }
+    
+    mathHtml += '</div>';
+    
+    // Update display
+    document.getElementById('math-steps').innerHTML = mathHtml;
+    document.getElementById('math-breakdown').style.display = 'block';
+    
+    // Update button states
+    document.querySelectorAll('.strategy-btn').forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+    document.getElementById('show-math').classList.add('active');
+    
+    console.log('Math breakdown displayed');
 }

@@ -36,7 +36,7 @@
                         <button type="button" class="country-btn" data-country="china">🇨🇳 China<br><span class="tariff-rate">30% Tariff<br>0% Premium</span></button>
                         <button type="button" class="country-btn" data-country="vietnam">🇻🇳 Vietnam<br><span class="tariff-rate">20% Tariff<br>+12.5% Premium</span></button>
                         <button type="button" class="country-btn" data-country="thailand">🇹🇭 Thailand<br><span class="tariff-rate">18% Tariff<br>+12.5% Premium</span></button>
-                        <button type="button" class="country-btn" data-country="cambodia">🇰🇭 Cambodia<br><span class="tariff-rate">0% Tariff<br>+15% Premium</span></button>
+                        <button type="button" class="country-btn" data-country="cambodia">🇰🇭 Cambodia<br><span class="tariff-rate">25% Tariff<br>+15% Premium</span></button>
                     </div>
                 </div>
 
@@ -76,9 +76,15 @@
                             </div>
                         </div>
                         
+                        <div class="math-breakdown" id="math-breakdown" style="display: none;">
+                            <h4>🧮 Detailed Math Breakdown</h4>
+                            <div class="math-steps" id="math-steps"></div>
+                        </div>
+                        
                         <div class="pricing-strategy" id="pricing-strategy">
                             <h4>💰 Pricing Strategy Options</h4>
                             <div class="strategy-buttons">
+                                <button type="button" class="strategy-btn" id="show-math">Show Math</button>
                                 <button type="button" class="strategy-btn" id="protect-margin-dollars">Protect Margin $</button>
                                 <button type="button" class="strategy-btn" id="protect-margin-percent">Protect Margin %</button>
                                 <button type="button" class="strategy-btn" id="absorb-increase">Absorb Cost</button>

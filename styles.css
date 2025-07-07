@@ -424,6 +424,63 @@ select:hover {
     margin: 10px 0;
 }
 
+/* Math Breakdown Styles */
+.math-breakdown {
+    margin-top: 25px;
+    background: linear-gradient(135deg, #fff9e6 0%, #f0f8ff 100%);
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #ffeaa7;
+}
+
+.math-breakdown h4 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.math-step-by-step {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.math-step {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #74b9ff;
+}
+
+.math-step.final-step {
+    border-left-color: #00b894;
+    background: #e8f5e8;
+}
+
+.math-step.comparison-step {
+    border-left-color: #fdcb6e;
+    background: #fff9e6;
+}
+
+.step-title {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1em;
+    margin-bottom: 8px;
+}
+
+.step-calc {
+    font-family: 'Courier New', monospace;
+    color: #636e72;
+    font-size: 0.9em;
+    margin: 4px 0;
+    padding: 4px 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
 .quick-analysis h3 {
     color: #2c3e50;
     margin-bottom: 15px;
