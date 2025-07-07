@@ -1,60 +1,101 @@
 // Tariff Calculator JavaScript
 
-// Tariff rates database (simplified for demonstration)
+// Real HTS Code and Tariff Data from Audio Equipment Industry
+const htsCodeData = {
+    '8518.22.0000': {
+        category: 'speakers',
+        description: 'Speakers',
+        tariffRate: 0.075,      // 7.5% 301 tariff
+        products: ['VX62R', 'IS6'],
+        countryMix: { china: 0.85, vietnam: 0.15 }
+    },
+    '8518.21.0000': {
+        category: 'speakers',
+        description: 'Speakers',
+        tariffRate: 0.075,      // 7.5% 301 tariff
+        products: ['PS-C63RT WHITE EA'],
+        countryMix: { china: 0.85, vietnam: 0.15 }
+    },
+    '8473.30.5100': {
+        category: 'iport',
+        description: 'iPort Cases',
+        tariffRate: 0.25,       // 25% 301 tariff
+        products: ['CONNECT PRO MINI CASE', 'C-PRO UTILITY CASE', 'CONNECT MOUNT Case'],
+        countryMix: { china: 0.80, cambodia: 0.20 }
+    },
+    '8518.40.2000': {
+        category: 'amplifiers',
+        description: 'Amplifiers',
+        tariffRate: 0.25,       // 25% 301 tariff
+        products: ['UA 2-125 DSP AMPLIFIER', 'DSP 8-130 MKIII'],
+        countryMix: { china: 0.15, thailand: 0.85 }
+    }
+};
+
+// Tariff rates database based on real data
 const tariffRates = {
     china: {
-        electronics: 0.25,      // 25% tariff on Chinese electronics
-        textiles: 0.15,         // 15% tariff on Chinese textiles
-        automotive: 0.20,       // 20% tariff on Chinese automotive parts
-        machinery: 0.10,        // 10% tariff on Chinese machinery
-        steel: 0.35,           // 35% tariff on Chinese steel
-        solar: 0.30,           // 30% tariff on Chinese solar panels
-        other: 0.08            // 8% general tariff
+        speakers: 0.075,        // 7.5% 301 tariff
+        iport: 0.25,           // 25% 301 tariff
+        amplifiers: 0.25,      // 25% 301 tariff
+        electronics: 0.075,    // Default audio electronics
+        other: 0.075           // Default for other items
+    },
+    thailand: {
+        speakers: 0.00,         // No tariff
+        iport: 0.00,           // No tariff
+        amplifiers: 0.00,      // No tariff
+        electronics: 0.00,     // No tariff
+        other: 0.00            // No tariff
+    },
+    vietnam: {
+        speakers: 0.00,         // No tariff
+        iport: 0.00,           // No tariff
+        amplifiers: 0.00,      // No tariff
+        electronics: 0.00,     // No tariff
+        other: 0.00            // No tariff
+    },
+    cambodia: {
+        speakers: 0.00,         // No tariff
+        iport: 0.00,           // No tariff
+        amplifiers: 0.00,      // No tariff
+        electronics: 0.00,     // No tariff
+        other: 0.00            // No tariff
     },
     mexico: {
-        electronics: 0.02,      // 2% under USMCA
-        textiles: 0.05,         // 5% textiles
-        automotive: 0.00,       // 0% under USMCA
-        machinery: 0.03,        // 3% machinery
-        steel: 0.10,           // 10% steel
-        solar: 0.05,           // 5% solar
-        other: 0.02            // 2% general
+        speakers: 0.00,         // USMCA
+        iport: 0.00,           // USMCA
+        amplifiers: 0.00,      // USMCA
+        electronics: 0.00,     // USMCA
+        other: 0.00            // USMCA
     },
     canada: {
-        electronics: 0.00,      // 0% under USMCA
-        textiles: 0.03,         // 3% textiles
-        automotive: 0.00,       // 0% under USMCA
-        machinery: 0.02,        // 2% machinery
-        steel: 0.05,           // 5% steel
-        solar: 0.00,           // 0% solar
-        other: 0.01            // 1% general
+        speakers: 0.00,         // USMCA
+        iport: 0.00,           // USMCA
+        amplifiers: 0.00,      // USMCA
+        electronics: 0.00,     // USMCA
+        other: 0.00            // USMCA
     },
     germany: {
-        electronics: 0.06,      // 6% MFN rate
-        textiles: 0.08,         // 8% textiles
-        automotive: 0.04,       // 4% automotive
-        machinery: 0.03,        // 3% machinery
-        steel: 0.12,           // 12% steel
-        solar: 0.06,           // 6% solar
-        other: 0.05            // 5% general MFN
+        speakers: 0.04,         // MFN rate
+        iport: 0.06,           // MFN rate
+        amplifiers: 0.04,      // MFN rate
+        electronics: 0.04,     // MFN rate
+        other: 0.04            // MFN rate
     },
     japan: {
-        electronics: 0.04,      // 4% MFN rate
-        textiles: 0.07,         // 7% textiles
-        automotive: 0.03,       // 3% automotive
-        machinery: 0.02,        // 2% machinery
-        steel: 0.10,           // 10% steel
-        solar: 0.04,           // 4% solar
-        other: 0.04            // 4% general MFN
+        speakers: 0.04,         // MFN rate
+        iport: 0.06,           // MFN rate
+        amplifiers: 0.04,      // MFN rate
+        electronics: 0.04,     // MFN rate
+        other: 0.04            // MFN rate
     },
     other: {
-        electronics: 0.08,      // 8% general rate
-        textiles: 0.10,         // 10% textiles
-        automotive: 0.06,       // 6% automotive
-        machinery: 0.05,        // 5% machinery
-        steel: 0.15,           // 15% steel
-        solar: 0.10,           // 10% solar
-        other: 0.06            // 6% general
+        speakers: 0.08,         // General rate
+        iport: 0.10,           // General rate
+        amplifiers: 0.08,      // General rate
+        electronics: 0.08,     // General rate
+        other: 0.08            // General rate
     }
 };
 
@@ -80,6 +121,7 @@ const countryOriginSelect = document.getElementById('country-origin');
 const productCategorySelect = document.getElementById('product-category');
 const tradeAgreementSelect = document.getElementById('trade-agreement');
 const calculateBtn = document.getElementById('calculate-btn');
+const weightedCalcBtn = document.getElementById('weighted-calc-btn');
 const resultsDiv = document.getElementById('results');
 
 // Result display elements
@@ -91,6 +133,7 @@ const tariffExplanationP = document.getElementById('tariff-explanation');
 
 // Event listeners
 calculateBtn.addEventListener('click', calculateTariff);
+weightedCalcBtn.addEventListener('click', calculateWeightedTariff);
 
 // Allow Enter key to trigger calculation
 document.addEventListener('keypress', function(e) {
@@ -143,6 +186,48 @@ function calculateTariff() {
     displayResults(productValue, finalTariffRate, tariffAmount, totalCost, countryOrigin, productCategory, tradeAgreement);
 }
 
+function calculateWeightedTariff() {
+    const productValue = parseFloat(productValueInput.value) || 0;
+    const productCategory = productCategorySelect.value;
+    
+    if (productValue <= 0 || !productCategory) {
+        alert('Please enter a product value and select a category first.');
+        return;
+    }
+    
+    // Find HTS data for this category
+    const htsMatch = Object.values(htsCodeData).find(data => data.category === productCategory);
+    
+    if (!htsMatch || !htsMatch.countryMix) {
+        alert('No sourcing mix data available for this product category.');
+        return;
+    }
+    
+    // Calculate weighted tariff rate
+    let weightedRate = 0;
+    const mixDetails = [];
+    
+    for (const [country, percentage] of Object.entries(htsMatch.countryMix)) {
+        const countryRate = tariffRates[country] && tariffRates[country][productCategory] || 0;
+        const weightedContribution = countryRate * percentage;
+        weightedRate += weightedContribution;
+        
+        mixDetails.push({
+            country: country,
+            percentage: percentage,
+            rate: countryRate,
+            contribution: weightedContribution
+        });
+    }
+    
+    // Calculate amounts
+    const tariffAmount = productValue * weightedRate;
+    const totalCost = productValue + tariffAmount;
+    
+    // Display weighted results
+    displayWeightedResults(productValue, weightedRate, tariffAmount, totalCost, productCategory, mixDetails);
+}
+
 function displayResults(productValue, tariffRate, tariffAmount, totalCost, country, category, agreement) {
     // Format and display values
     originalValueSpan.textContent = formatCurrency(productValue);
@@ -159,6 +244,33 @@ function displayResults(productValue, tariffRate, tariffAmount, totalCost, count
     resultsDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
+function displayWeightedResults(productValue, weightedRate, tariffAmount, totalCost, category, mixDetails) {
+    // Format and display values
+    originalValueSpan.textContent = formatCurrency(productValue);
+    tariffRateSpan.textContent = (weightedRate * 100).toFixed(2) + '% (Weighted)';
+    tariffAmountSpan.textContent = formatCurrency(tariffAmount);
+    totalCostSpan.textContent = formatCurrency(totalCost);
+
+    // Generate weighted explanation
+    const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+    let explanation = `Weighted tariff rate for ${categoryName}: ${(weightedRate * 100).toFixed(2)}%\n\n`;
+    explanation += 'Breakdown by sourcing country:\n';
+    
+    mixDetails.forEach(detail => {
+        const countryName = detail.country.charAt(0).toUpperCase() + detail.country.slice(1);
+        explanation += `• ${countryName}: ${(detail.percentage * 100).toFixed(0)}% of sourcing × ${(detail.rate * 100).toFixed(1)}% tariff = ${(detail.contribution * 100).toFixed(2)}%\n`;
+    });
+    
+    explanation += '\nBased on actual sourcing mix data from your product portfolio.';
+    
+    tariffExplanationP.textContent = explanation;
+    tariffExplanationP.style.whiteSpace = 'pre-line';
+
+    // Show results
+    resultsDiv.style.display = 'block';
+    resultsDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
 function hideResults() {
     resultsDiv.style.display = 'none';
 }
@@ -169,6 +281,12 @@ function generateExplanation(country, category, agreement, rate) {
     
     let explanation = `Tariff rate for ${categoryName} from ${countryName}: ${(rate * 100).toFixed(2)}%`;
     
+    // Add Section 301 context for China
+    if (country === 'china' && rate > 0) {
+        explanation += ` (Section 301 tariff)`;
+    }
+    
+    // Add trade agreement context
     if (agreement && agreement !== 'none') {
         const agreementNames = {
             'usmca': 'USMCA',
@@ -178,7 +296,16 @@ function generateExplanation(country, category, agreement, rate) {
         explanation += ` (adjusted for ${agreementNames[agreement]})`;
     }
     
-    explanation += '. Rates are simplified estimates based on general trade policies.';
+    // Add sourcing mix information if available
+    const htsMatch = Object.values(htsCodeData).find(data => data.category === category);
+    if (htsMatch && htsMatch.countryMix) {
+        explanation += '. Typical sourcing: ';
+        const mixEntries = Object.entries(htsMatch.countryMix);
+        const mixStrings = mixEntries.map(([c, pct]) => `${c}: ${(pct * 100).toFixed(0)}%`);
+        explanation += mixStrings.join(', ');
+    }
+    
+    explanation += '. Based on actual HTS codes and Section 301 tariff rates.';
     
     return explanation;
 }

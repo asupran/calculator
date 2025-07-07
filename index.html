@@ -9,8 +9,8 @@
 <body>
     <div class="container">
         <header>
-            <h1>🌍 Tariff Calculator</h1>
-            <p>Calculate import duties and taxes for international trade</p>
+            <h1>🎵 Audio Equipment Tariff Calculator</h1>
+            <p>Calculate Section 301 tariffs for audio equipment imports</p>
         </header>
 
         <main>
@@ -25,6 +25,9 @@
                     <select id="country-origin">
                         <option value="">Select country</option>
                         <option value="china">China</option>
+                        <option value="thailand">Thailand</option>
+                        <option value="vietnam">Vietnam</option>
+                        <option value="cambodia">Cambodia</option>
                         <option value="mexico">Mexico</option>
                         <option value="canada">Canada</option>
                         <option value="germany">Germany</option>
@@ -37,13 +40,11 @@
                     <label for="product-category">Product Category</label>
                     <select id="product-category">
                         <option value="">Select category</option>
-                        <option value="electronics">Electronics</option>
-                        <option value="textiles">Textiles & Apparel</option>
-                        <option value="automotive">Automotive Parts</option>
-                        <option value="machinery">Machinery</option>
-                        <option value="steel">Steel & Aluminum</option>
-                        <option value="solar">Solar Panels</option>
-                        <option value="other">Other</option>
+                        <option value="speakers">Speakers (HTS 8518.22/8518.21)</option>
+                        <option value="iport">iPort Cases (HTS 8473.30.5100)</option>
+                        <option value="amplifiers">Amplifiers (HTS 8518.40.2000)</option>
+                        <option value="electronics">Other Audio Electronics</option>
+                        <option value="other">Other Products</option>
                     </select>
                 </div>
 
@@ -58,6 +59,14 @@
                 </div>
 
                 <button type="button" id="calculate-btn">Calculate Tariff</button>
+                
+                <div class="advanced-options">
+                    <details>
+                        <summary>Advanced: Show Weighted Tariff Rate</summary>
+                        <p>Calculate blended tariff rate based on typical sourcing mix for this product category</p>
+                        <button type="button" id="weighted-calc-btn">Show Weighted Rate</button>
+                    </details>
+                </div>
             </div>
 
             <div class="results" id="results" style="display: none;">
