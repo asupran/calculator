@@ -1,15 +1,15 @@
 // Simple, reliable tariff calculator
 
-// Product data
+// Product data with ASP for margin calculations
 const products = {
-    'VX62R': { cogs: 61.12, category: 'speakers' },
-    'IS6': { cogs: 153.71, category: 'speakers' },
-    'PS-C63RT WHITE EA': { cogs: 64.10, category: 'speakers' },
-    'CONNECT PRO MINI CASE': { cogs: 52.34, category: 'iport' },
-    'C-PRO UTILITY CASE 11PRO M4 GN': { cogs: 78.47, category: 'iport' },
-    'CONNECT MOUNT Case iPad A16 BK': { cogs: 39.66, category: 'iport' },
-    'UA 2-125 DSP AMPLIFIER': { cogs: 172.21, category: 'amplifiers' },
-    'DSP 8-130 MKIII': { cogs: 632.14, category: 'amplifiers' }
+    'VX62R': { cogs: 61.12, asp: 212.49, category: 'speakers' },
+    'IS6': { cogs: 153.71, asp: 570.44, category: 'speakers' },
+    'PS-C63RT WHITE EA': { cogs: 64.10, asp: 137.26, category: 'speakers' },
+    'CONNECT PRO MINI CASE': { cogs: 52.34, asp: 196.16, category: 'iport' },
+    'C-PRO UTILITY CASE 11PRO M4 GN': { cogs: 78.47, asp: 215.00, category: 'iport' },
+    'CONNECT MOUNT Case iPad A16 BK': { cogs: 39.66, asp: 78.26, category: 'iport' },
+    'UA 2-125 DSP AMPLIFIER': { cogs: 172.21, asp: 484.00, category: 'amplifiers' },
+    'DSP 8-130 MKIII': { cogs: 632.14, asp: 1709.88, category: 'amplifiers' }
 };
 
 // Tariff rates
@@ -31,6 +31,7 @@ const premiums = {
 // Current selections
 let currentProduct = null;
 let currentCountry = null;
+let currentTotalCost = null;
 
 // Wait for page to load
 window.addEventListener('load', function() {
@@ -54,6 +55,29 @@ window.addEventListener('load', function() {
             selectCountry(country);
         });
     });
+    
+    // Pricing strategy buttons
+    const protectDollarsBtn = document.getElementById('protect-margin-dollars');
+    const protectPercentBtn = document.getElementById('protect-margin-percent');
+    const absorbBtn = document.getElementById('absorb-increase');
+    
+    if (protectDollarsBtn) {
+        protectDollarsBtn.addEventListener('click', function() {
+            showPricingStrategy('protect-dollars');
+        });
+    }
+    
+    if (protectPercentBtn) {
+        protectPercentBtn.addEventListener('click', function() {
+            showPricingStrategy('protect-percent');
+        });
+    }
+    
+    if (absorbBtn) {
+        absorbBtn.addEventListener('click', function() {
+            showPricingStrategy('absorb');
+        });
+    }
     
     console.log('Calculator setup complete');
 });
@@ -110,6 +134,9 @@ function calculate() {
     const adjustedCogs = baseCogs * (1 + premium);
     const tariffCost = adjustedCogs * tariffRate;
     const totalCost = adjustedCogs + tariffCost;
+    
+    // Store for pricing calculations
+    currentTotalCost = totalCost;
     
     console.log('Costs:', { baseCogs, premium, adjustedCogs, tariffCost, totalCost });
     
@@ -205,4 +232,78 @@ function hideResults() {
     if (resultsDiv) {
         resultsDiv.style.display = 'none';
     }
+}
+
+function showPricingStrategy(strategy) {
+    if (!currentProduct || !currentCountry || !currentTotalCost) {
+        console.log('Missing data for pricing strategy');
+        return;
+    }
+    
+    const currentASP = currentProduct.asp;
+    const originalCOGS = currentProduct.cogs; // China baseline COGS
+    const newCOGS = currentTotalCost; // New total cost including tariffs
+    
+    // Current margins (based on China baseline)
+    const currentMarginDollars = currentASP - originalCOGS;
+    const currentMarginPercent = (currentMarginDollars / currentASP) * 100;
+    
+    let recommendedASP = currentASP;
+    let strategyLabel = 'Current ASP:';
+    
+    if (strategy === 'protect-dollars') {
+        // Keep same margin dollars: New ASP = New COGS + Current Margin $
+        recommendedASP = newCOGS + currentMarginDollars;
+        strategyLabel = 'ASP to Protect Margin $:';
+    } else if (strategy === 'protect-percent') {
+        // Keep same margin percent: New ASP = New COGS / (1 - Margin %)
+        recommendedASP = newCOGS / (1 - (currentMarginPercent / 100));
+        strategyLabel = 'ASP to Protect Margin %:';
+    } else if (strategy === 'absorb') {
+        // Keep current ASP, absorb the cost increase
+        recommendedASP = currentASP;
+        strategyLabel = 'Current ASP (Absorb Cost):';
+    }
+    
+    // Calculate new margins
+    const newMarginDollars = recommendedASP - newCOGS;
+    const newMarginPercent = (newMarginDollars / recommendedASP) * 100;
+    const priceIncrease = recommendedASP - currentASP;
+    
+    // Update display
+    document.getElementById('current-asp').textContent = '$' + currentASP.toFixed(2);
+    document.getElementById('current-margin-dollars').textContent = '$' + currentMarginDollars.toFixed(2);
+    document.getElementById('current-margin-percent').textContent = currentMarginPercent.toFixed(1) + '%';
+    
+    document.getElementById('strategy-label').textContent = strategyLabel;
+    document.getElementById('recommended-asp').textContent = '$' + recommendedASP.toFixed(2);
+    document.getElementById('new-margin-dollars').textContent = '$' + newMarginDollars.toFixed(2);
+    document.getElementById('new-margin-percent').textContent = newMarginPercent.toFixed(1) + '%';
+    document.getElementById('price-increase').textContent = (priceIncrease >= 0 ? '+$' : '-$') + Math.abs(priceIncrease).toFixed(2);
+    
+    // Update button states
+    document.querySelectorAll('.strategy-btn').forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+    
+    if (strategy === 'protect-dollars') {
+        document.getElementById('protect-margin-dollars').classList.add('active');
+    } else if (strategy === 'protect-percent') {
+        document.getElementById('protect-margin-percent').classList.add('active');
+    } else if (strategy === 'absorb') {
+        document.getElementById('absorb-increase').classList.add('active');
+    }
+    
+    // Show pricing results
+    document.getElementById('pricing-results').style.display = 'block';
+    
+    console.log('Pricing strategy:', strategy, {
+        currentASP,
+        recommendedASP,
+        currentMarginDollars,
+        newMarginDollars,
+        currentMarginPercent,
+        newMarginPercent,
+        priceIncrease
+    });
 }
