@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Test</title>
+</head>
+<body>
+    <h1>JavaScript Test</h1>
+    <button onclick="alert('Button works!')">Test Button</button>
+    
+    <select id="test-select">
+        <option value="">Select...</option>
+        <option value="VX62R">VX62R</option>
+    </select>
+    
+    <button id="test-country" data-country="china">China Test</button>
+    
+    <div id="test-result" style="display:none;">
+        <h2>Result appears!</h2>
+    </div>
+    
+    <script>
+        console.log('Test script loaded');
+        
+        // Test the product data
+        const productData = {
+            'VX62R': {
+                cogs: 61.12,
+                category: 'speakers'
+            }
+        };
+        
+        const tariffRates = {
+            china: {
+                speakers: 0.30
+            }
+        };
+        
+        // Test select
+        document.getElementById('test-select').addEventListener('change', function() {
+            console.log('Select changed to:', this.value);
+            if (this.value === 'VX62R') {
+                document.getElementById('test-result').style.display = 'block';
+            }
+        });
+        
+        // Test button
+        document.getElementById('test-country').addEventListener('click', function() {
+            console.log('Country button clicked');
+            alert('Country button works!');
+        });
+        
+        console.log('Event listeners attached');
+    </script>
+</body>
+</html>
