@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tariff Calculator - Simplified</title>
+    <link rel="stylesheet" href="styles-improved.css">
+</head>
+<body>
+    <!-- Dismissible Breaking News -->
+    <div class="breaking-news" id="breaking-news">
+        <div class="breaking-content">
+            <span class="breaking-badge">OFFICIAL RATES</span>
+            <span>China Electronics 55% | Vietnam 20% | Japan/Korea 25% | Malaysia 24%</span>
+            <button class="dismiss-btn" onclick="dismissNews()">×</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>Audio Equipment Tariff Calculator</h1>
+            <p>Calculate import costs with official July 2025 tariff rates</p>
+        </header>
+
+        <main>
+            <!-- Progress Indicator -->
+            <div class="progress-indicator">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Select Product</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Choose Country</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">View Results</div>
+                </div>
+            </div>
+
+            <!-- Step 1: Product Selection -->
+            <div class="step-content active" id="step-1">
+                <h2>Select Your Product</h2>
+                <div class="product-grid">
+                    <button class="product-card" data-product="VX62R">
+                        <div class="product-category">SPEAKERS</div>
+                        <div class="product-name">VX62R</div>
+                        <div class="product-price">$550 MSRP</div>
+                    </button>
+                    <button class="product-card" data-product="IS6">
+                        <div class="product-category">SPEAKERS</div>
+                        <div class="product-name">IS6</div>
+                        <div class="product-price">$1,515 MSRP</div>
+                    </button>
+                    <button class="product-card" data-product="PS-C63RT WHITE EA">
+                        <div class="product-category">SPEAKERS</div>
+                        <div class="product-name">PS-C63RT</div>
+                        <div class="product-price">$235 MSRP</div>
+                    </button>
+                    <button class="product-card" data-product="CONNECT PRO MINI CASE">
+                        <div class="product-category">IPORT</div>
+                        <div class="product-name">Connect Pro Mini</div>
+                        <div class="product-price">$300 MSRP</div>
+                    </button>
+                    <button class="product-card" data-product="C-PRO UTILITY CASE 11PRO M4 GN">
+                        <div class="product-category">IPORT</div>
+                        <div class="product-name">C-Pro Utility</div>
+                        <div class="product-price">$250 MSRP</div>
+                    </button>
+                    <button class="product-card" data-product="CONNECT MOUNT Case iPad A16 BK">
+                        <div class="product-category">IPORT</div>
+                        <div class="product-name">Connect Mount</div>
+                        <div class="product-price">$125 MSRP</div>
+                    </button>
+                    <button class="product-card" data-product="UA 2-125 DSP AMPLIFIER">
+                        <div class="product-category">AMPLIFIERS</div>
+                        <div class="product-name">UA 2-125 DSP</div>
+                        <div class="product-price">$1,100 MSRP</div>
+                    </button>
+                    <button class="product-card" data-product="DSP 8-130 MKIII">
+                        <div class="product-category">AMPLIFIERS</div>
+                        <div class="product-name">DSP 8-130 MKIII</div>
+                        <div class="product-price">$3,740 MSRP</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Country Selection -->
+            <div class="step-content" id="step-2">
+                <h2>Choose Manufacturing Country</h2>
+                <div class="country-grid">
+                    <button class="country-card" data-country="vietnam">
+                        <div class="country-flag">🇻🇳</div>
+                        <div class="country-name">Vietnam</div>
+                        <div class="country-tariff">20%</div>
+                        <div class="country-badge best">BEST VALUE</div>
+                    </button>
+                    <button class="country-card" data-country="malaysia">
+                        <div class="country-flag">🇲🇾</div>
+                        <div class="country-name">Malaysia</div>
+                        <div class="country-tariff">24%</div>
+                    </button>
+                    <button class="country-card" data-country="japan">
+                        <div class="country-flag">🇯🇵</div>
+                        <div class="country-name">Japan</div>
+                        <div class="country-tariff">25%</div>
+                    </button>
+                    <button class="country-card" data-country="korea">
+                        <div class="country-flag">🇰🇷</div>
+                        <div class="country-name">South Korea</div>
+                        <div class="country-tariff">25%</div>
+                    </button>
+                    <button class="country-card" data-country="indonesia">
+                        <div class="country-flag">🇮🇩</div>
+                        <div class="country-name">Indonesia</div>
+                        <div class="country-tariff">32%</div>
+                    </button>
+                    <button class="country-card" data-country="thailand">
+                        <div class="country-flag">🇹🇭</div>
+                        <div class="country-name">Thailand</div>
+                        <div class="country-tariff">36%</div>
+                    </button>
+                    <button class="country-card" data-country="china">
+                        <div class="country-flag">🇨🇳</div>
+                        <div class="country-name">China</div>
+                        <div class="country-tariff">37.5-55%</div>
+                        <div class="country-note">Varies by category</div>
+                    </button>
+                    <button class="country-card" data-country="cambodia">
+                        <div class="country-flag">🇰🇭</div>
+                        <div class="country-name">Cambodia</div>
+                        <div class="country-tariff">49%</div>
+                    </button>
+                    <button class="country-card" data-country="eu">
+                        <div class="country-flag">🇪🇺</div>
+                        <div class="country-name">EU</div>
+                        <div class="country-tariff">34%</div>
+                    </button>
+                </div>
+                <button class="back-btn" onclick="goToStep(1)">← Back to Products</button>
+            </div>
+
+            <!-- Step 3: Results -->
+            <div class="step-content" id="step-3">
+                <div class="results-header">
+                    <h2>Cost Analysis Results</h2>
+                    <button class="recalculate-btn" onclick="goToStep(1)">Start New Calculation</button>
+                </div>
+                
+                <!-- Primary Results Card -->
+                <div class="results-card primary">
+                    <div class="result-item">
+                        <div class="result-label">Product</div>
+                        <div class="result-value" id="result-product">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Country</div>
+                        <div class="result-value" id="result-country">-</div>
+                    </div>
+                    <div class="result-item highlight">
+                        <div class="result-label">Total Cost</div>
+                        <div class="result-value large" id="result-total">$0.00</div>
+                    </div>
+                </div>
+
+                <!-- Cost Breakdown -->
+                <div class="results-card">
+                    <h3>Cost Breakdown</h3>
+                    <div class="breakdown-item">
+                        <span>Base Manufacturing Cost</span>
+                        <span id="breakdown-base">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Manufacturing Premium</span>
+                        <span id="breakdown-premium">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Import Tariff</span>
+                        <span id="breakdown-tariff">$0.00</span>
+                    </div>
+                    <div class="breakdown-total">
+                        <span>Total Cost</span>
+                        <span id="breakdown-total">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- Quick Comparison -->
+                <div class="results-card">
+                    <h3>Quick Comparison</h3>
+                    <div class="comparison-grid" id="comparison-grid">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <!-- Advanced Options (Initially Hidden) -->
+                <div class="advanced-toggle">
+                    <button class="toggle-btn" onclick="toggleAdvanced()">
+                        <span class="toggle-icon">▼</span>
+                        Advanced Analysis Options
+                    </button>
+                </div>
+                
+                <div class="advanced-options" id="advanced-options">
+                    <div class="option-tabs">
+                        <button class="tab-btn active" data-tab="pricing">Pricing Strategy</button>
+                        <button class="tab-btn" data-tab="details">Detailed Math</button>
+                        <button class="tab-btn" data-tab="export">Export Options</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="tab-pricing">
+                        <h4>Pricing Strategy Options</h4>
+                        <div class="strategy-buttons">
+                            <button class="strategy-btn" onclick="showPricingStrategy('protect-dollars')">
+                                Keep Same Profit $
+                            </button>
+                            <button class="strategy-btn" onclick="showPricingStrategy('protect-percent')">
+                                Keep Same Profit %
+                            </button>
+                            <button class="strategy-btn" onclick="showPricingStrategy('absorb')">
+                                Absorb the Cost
+                            </button>
+                        </div>
+                        <div class="strategy-results" id="strategy-results"></div>
+                    </div>
+                    
+                    <div class="tab-content" id="tab-details">
+                        <h4>Detailed Calculations</h4>
+                        <div class="math-details" id="math-details"></div>
+                    </div>
+                    
+                    <div class="tab-content" id="tab-export">
+                        <h4>Export Your Analysis</h4>
+                        <div class="export-buttons">
+                            <button class="export-btn" onclick="exportCSV()">
+                                📊 Download CSV
+                            </button>
+                            <button class="export-btn" onclick="exportPDF()">
+                                📄 Download Report
+                            </button>
+                            <button class="export-btn" onclick="shareLink()">
+                                🔗 Share Link
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2025 Audio Equipment Tariff Calculator | Data updated July 9, 2025</p>
+        </footer>
+    </div>
+
+    <script src="script-improved.js"></script>
+</body>
+</html>
