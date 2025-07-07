@@ -10,7 +10,7 @@ const productData = {
         asp: 212.49,
         msrp: 550,
         unit: 'pair',
-        tariffRate: 0.075
+        tariffRate: 0.60
     },
     'IS6': {
         sku: '93478',
@@ -20,7 +20,7 @@ const productData = {
         asp: 570.44,
         msrp: 1515,
         unit: 'pair',
-        tariffRate: 0.075
+        tariffRate: 0.60
     },
     'PS-C63RT WHITE EA': {
         sku: '45131',
@@ -30,7 +30,7 @@ const productData = {
         asp: 137.26,
         msrp: 235,
         unit: 'each',
-        tariffRate: 0.075
+        tariffRate: 0.60
     },
     'CONNECT PRO MINI CASE': {
         sku: '72329',
@@ -40,7 +40,7 @@ const productData = {
         asp: 196.16,
         msrp: 300,
         unit: 'each',
-        tariffRate: 0.25
+        tariffRate: 0.60
     },
     'C-PRO UTILITY CASE 11PRO M4 GN': {
         sku: '72494',
@@ -50,7 +50,7 @@ const productData = {
         asp: 215.00,
         msrp: 250,
         unit: 'each',
-        tariffRate: 0.25
+        tariffRate: 0.60
     },
     'CONNECT MOUNT Case iPad A16 BK': {
         sku: '72496',
@@ -60,7 +60,7 @@ const productData = {
         asp: 78.26,
         msrp: 125,
         unit: 'each',
-        tariffRate: 0.25
+        tariffRate: 0.60
     },
     'UA 2-125 DSP AMPLIFIER': {
         sku: '93550',
@@ -70,7 +70,7 @@ const productData = {
         asp: 484.00,
         msrp: 1100,
         unit: 'each',
-        tariffRate: 0.25
+        tariffRate: 0.60
     },
     'DSP 8-130 MKIII': {
         sku: '93538',
@@ -80,43 +80,43 @@ const productData = {
         asp: 1709.88,
         msrp: 3740,
         unit: 'each',
-        tariffRate: 0.25
+        tariffRate: 0.60
     }
 };
 
-// Category-level data for analysis
+// Category-level data for analysis with updated tariff rates
 const categoryData = {
     'speakers': {
         hts: ['8518.22.0000', '8518.21.0000'],
         totalCogs2025: 14938000,
         totalRevenue2025: 46027000,
         countryMix: { china: 0.85, vietnam: 0.15 },
-        tariffRate: 0.075
+        tariffRate: 0.60  // Updated to 60%
     },
     'iport': {
         hts: ['8473.30.5100'],
         totalCogs2025: 6228000,
         totalRevenue2025: 15279000,
         countryMix: { china: 0.80, cambodia: 0.20 },
-        tariffRate: 0.25
+        tariffRate: 0.60  // Updated to 60%
     },
     'amplifiers': {
         hts: ['8518.40.2000'],
         totalCogs2025: 3171000,
         totalRevenue2025: 7487000,
         countryMix: { china: 0.15, thailand: 0.85 },
-        tariffRate: 0.25
+        tariffRate: 0.60  // Updated to 60%
     }
 };
 
-// Tariff rates database based on real data
+// Updated tariff rates with new China/Vietnam rates
 const tariffRates = {
     china: {
-        speakers: 0.075,        // 7.5% 301 tariff
-        iport: 0.25,           // 25% 301 tariff
-        amplifiers: 0.25,      // 25% 301 tariff
-        electronics: 0.075,    // Default audio electronics
-        other: 0.075           // Default for other items
+        speakers: 0.60,         // 60% new tariff rate
+        iport: 0.60,           // 60% new tariff rate  
+        amplifiers: 0.60,      // 60% new tariff rate
+        electronics: 0.60,     // 60% new tariff rate
+        other: 0.60            // 60% new tariff rate
     },
     thailand: {
         speakers: 0.00,         // No tariff
@@ -126,11 +126,11 @@ const tariffRates = {
         other: 0.00            // No tariff
     },
     vietnam: {
-        speakers: 0.00,         // No tariff
-        iport: 0.00,           // No tariff
-        amplifiers: 0.00,      // No tariff
-        electronics: 0.00,     // No tariff
-        other: 0.00            // No tariff
+        speakers: 0.35,         // 35% new tariff rate
+        iport: 0.35,           // 35% new tariff rate
+        amplifiers: 0.35,      // 35% new tariff rate
+        electronics: 0.35,     // 35% new tariff rate
+        other: 0.35            // 35% new tariff rate
     },
     cambodia: {
         speakers: 0.00,         // No tariff
