@@ -133,11 +133,11 @@ const tariffRates = {
         other: 0.20            // 20% tariff rate
     },
     cambodia: {
-        speakers: 0.00,         // No tariff
-        iport: 0.00,           // No tariff
-        amplifiers: 0.00,      // No tariff
-        electronics: 0.00,     // No tariff
-        other: 0.00            // No tariff
+        speakers: 0.08,         // Estimated MFN rate
+        iport: 0.10,           // Estimated MFN rate
+        amplifiers: 0.08,      // Estimated MFN rate
+        electronics: 0.08,     // Estimated MFN rate
+        other: 0.08            // Estimated MFN rate
     },
     mexico: {
         speakers: 0.00,         // USMCA
@@ -576,18 +576,36 @@ function selectCountry(country) {
     }
 }
 
+// Manufacturing cost premiums for non-China sourcing
+const manufacturingPremiums = {
+    china: 0.00,        // Baseline (no premium)
+    vietnam: 0.125,     // 12.5% premium
+    thailand: 0.125,    // 12.5% premium  
+    cambodia: 0.15,     // 15% premium
+    mexico: 0.10,       // 10% premium
+    canada: 0.10,       // 10% premium
+    germany: 0.20,      // 20% premium
+    japan: 0.15,        // 15% premium
+    other: 0.15         // 15% premium
+};
+
 function calculateSimple() {
     if (!currentProduct || !selectedCountry) return;
     
-    const productCost = currentProduct.cogs;
+    const baseCogs = currentProduct.cogs;
+    const manufacturingPremium = manufacturingPremiums[selectedCountry] || 0;
+    const adjustedCogs = baseCogs * (1 + manufacturingPremium);
     const tariffRate = tariffRates[selectedCountry][currentProduct.category] || 0;
-    const tariffCost = productCost * tariffRate;
-    const totalCost = productCost + tariffCost;
+    const tariffCost = adjustedCogs * tariffRate;
+    const totalCost = adjustedCogs + tariffCost;
     
     // Update display
-    document.getElementById('product-cost').textContent = formatCurrency(productCost);
+    document.getElementById('product-cost').textContent = formatCurrency(adjustedCogs);
     document.getElementById('tariff-cost').textContent = formatCurrency(tariffCost);
     document.getElementById('total-cost-simple').textContent = formatCurrency(totalCost);
+    
+    // Show manufacturing premium if applicable
+    updateCostBreakdown(baseCogs, adjustedCogs, manufacturingPremium, tariffCost, totalCost);
     
     // Show comparison across all countries
     updateComparisonGrid();
@@ -600,11 +618,14 @@ function updateComparisonGrid() {
     if (!currentProduct) return;
     
     const countries = ['china', 'vietnam', 'thailand'];
-    const productCost = currentProduct.cogs;
+    const baseCogs = currentProduct.cogs;
     
     countries.forEach(country => {
+        const manufacturingPremium = manufacturingPremiums[country] || 0;
+        const adjustedCogs = baseCogs * (1 + manufacturingPremium);
         const tariffRate = tariffRates[country][currentProduct.category] || 0;
-        const totalCost = productCost * (1 + tariffRate);
+        const tariffCost = adjustedCogs * tariffRate;
+        const totalCost = adjustedCogs + tariffCost;
         document.getElementById(`${country}-cost`).textContent = formatCurrency(totalCost);
     });
 }
@@ -615,6 +636,54 @@ function updateCountryButtons() {
         btn.classList.remove('selected');
     });
     selectedCountry = null;
+}
+
+function updateCostBreakdown(baseCogs, adjustedCogs, manufacturingPremium, tariffCost, totalCost) {
+    // Update the cost breakdown to show manufacturing premium if applicable
+    const costBreakdown = document.querySelector('.cost-breakdown');
+    
+    if (manufacturingPremium > 0) {
+        // Show detailed breakdown with manufacturing premium
+        const premiumCost = adjustedCogs - baseCogs;
+        costBreakdown.innerHTML = `
+            <div class="cost-row">
+                <span>Base COGS (China equivalent):</span>
+                <span>${formatCurrency(baseCogs)}</span>
+            </div>
+            <div class="cost-row manufacturing-premium">
+                <span>Manufacturing Premium (+${(manufacturingPremium * 100).toFixed(1)}%):</span>
+                <span>${formatCurrency(premiumCost)}</span>
+            </div>
+            <div class="cost-row">
+                <span>Adjusted Product Cost:</span>
+                <span>${formatCurrency(adjustedCogs)}</span>
+            </div>
+            <div class="cost-row tariff-cost">
+                <span>Tariff Cost:</span>
+                <span>${formatCurrency(tariffCost)}</span>
+            </div>
+            <div class="cost-row total-cost">
+                <span>Total Cost:</span>
+                <span>${formatCurrency(totalCost)}</span>
+            </div>
+        `;
+    } else {
+        // Simple breakdown for China (no premium)
+        costBreakdown.innerHTML = `
+            <div class="cost-row">
+                <span>Product Cost:</span>
+                <span>${formatCurrency(adjustedCogs)}</span>
+            </div>
+            <div class="cost-row tariff-cost">
+                <span>Tariff Cost:</span>
+                <span>${formatCurrency(tariffCost)}</span>
+            </div>
+            <div class="cost-row total-cost">
+                <span>Total Cost:</span>
+                <span>${formatCurrency(totalCost)}</span>
+            </div>
+        `;
+    }
 }
 
 function hideSimpleResults() {

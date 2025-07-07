@@ -280,6 +280,11 @@ select:hover {
     font-weight: 600;
 }
 
+.cost-row.manufacturing-premium {
+    color: #f39c12;
+    font-weight: 600;
+}
+
 .cost-row.total-cost {
     font-weight: 700;
     font-size: 1.2em;
