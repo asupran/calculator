@@ -1,34 +1,111 @@
 // Tariff Calculator JavaScript
 
-// Real HTS Code and Tariff Data from Audio Equipment Industry
-const htsCodeData = {
-    '8518.22.0000': {
+// Real Product Data from Your Portfolio
+const productData = {
+    'VX62R': {
+        sku: '96012',
         category: 'speakers',
-        description: 'Speakers',
-        tariffRate: 0.075,      // 7.5% 301 tariff
-        products: ['VX62R', 'IS6'],
-        countryMix: { china: 0.85, vietnam: 0.15 }
+        hts: '8518.22.0000',
+        cogs: 61.12,
+        asp: 212.49,
+        msrp: 550,
+        unit: 'pair',
+        tariffRate: 0.075
     },
-    '8518.21.0000': {
+    'IS6': {
+        sku: '93478',
         category: 'speakers',
-        description: 'Speakers',
-        tariffRate: 0.075,      // 7.5% 301 tariff
-        products: ['PS-C63RT WHITE EA'],
-        countryMix: { china: 0.85, vietnam: 0.15 }
+        hts: '8518.22.0000',
+        cogs: 153.71,
+        asp: 570.44,
+        msrp: 1515,
+        unit: 'pair',
+        tariffRate: 0.075
     },
-    '8473.30.5100': {
+    'PS-C63RT WHITE EA': {
+        sku: '45131',
+        category: 'speakers',
+        hts: '8518.21.0000',
+        cogs: 64.10,
+        asp: 137.26,
+        msrp: 235,
+        unit: 'each',
+        tariffRate: 0.075
+    },
+    'CONNECT PRO MINI CASE': {
+        sku: '72329',
         category: 'iport',
-        description: 'iPort Cases',
-        tariffRate: 0.25,       // 25% 301 tariff
-        products: ['CONNECT PRO MINI CASE', 'C-PRO UTILITY CASE', 'CONNECT MOUNT Case'],
-        countryMix: { china: 0.80, cambodia: 0.20 }
+        hts: '8473.30.5100',
+        cogs: 52.34,
+        asp: 196.16,
+        msrp: 300,
+        unit: 'each',
+        tariffRate: 0.25
     },
-    '8518.40.2000': {
+    'C-PRO UTILITY CASE 11PRO M4 GN': {
+        sku: '72494',
+        category: 'iport',
+        hts: '8473.30.5100',
+        cogs: 78.47,
+        asp: 215.00,
+        msrp: 250,
+        unit: 'each',
+        tariffRate: 0.25
+    },
+    'CONNECT MOUNT Case iPad A16 BK': {
+        sku: '72496',
+        category: 'iport',
+        hts: '8473.30.5100',
+        cogs: 39.66,
+        asp: 78.26,
+        msrp: 125,
+        unit: 'each',
+        tariffRate: 0.25
+    },
+    'UA 2-125 DSP AMPLIFIER': {
+        sku: '93550',
         category: 'amplifiers',
-        description: 'Amplifiers',
-        tariffRate: 0.25,       // 25% 301 tariff
-        products: ['UA 2-125 DSP AMPLIFIER', 'DSP 8-130 MKIII'],
-        countryMix: { china: 0.15, thailand: 0.85 }
+        hts: '8518.40.2000',
+        cogs: 172.21,
+        asp: 484.00,
+        msrp: 1100,
+        unit: 'each',
+        tariffRate: 0.25
+    },
+    'DSP 8-130 MKIII': {
+        sku: '93538',
+        category: 'amplifiers',
+        hts: '8518.40.2000',
+        cogs: 632.14,
+        asp: 1709.88,
+        msrp: 3740,
+        unit: 'each',
+        tariffRate: 0.25
+    }
+};
+
+// Category-level data for analysis
+const categoryData = {
+    'speakers': {
+        hts: ['8518.22.0000', '8518.21.0000'],
+        totalCogs2025: 14938000,
+        totalRevenue2025: 46027000,
+        countryMix: { china: 0.85, vietnam: 0.15 },
+        tariffRate: 0.075
+    },
+    'iport': {
+        hts: ['8473.30.5100'],
+        totalCogs2025: 6228000,
+        totalRevenue2025: 15279000,
+        countryMix: { china: 0.80, cambodia: 0.20 },
+        tariffRate: 0.25
+    },
+    'amplifiers': {
+        hts: ['8518.40.2000'],
+        totalCogs2025: 3171000,
+        totalRevenue2025: 7487000,
+        countryMix: { china: 0.15, thailand: 0.85 },
+        tariffRate: 0.25
     }
 };
 
@@ -117,12 +194,14 @@ const tradeAgreements = {
 
 // DOM elements
 const productValueInput = document.getElementById('product-value');
+const productSelector = document.getElementById('product-selector');
 const countryOriginSelect = document.getElementById('country-origin');
 const productCategorySelect = document.getElementById('product-category');
 const tradeAgreementSelect = document.getElementById('trade-agreement');
 const calculateBtn = document.getElementById('calculate-btn');
 const weightedCalcBtn = document.getElementById('weighted-calc-btn');
 const resultsDiv = document.getElementById('results');
+const portfolioAnalysisDiv = document.getElementById('portfolio-analysis');
 
 // Result display elements
 const originalValueSpan = document.getElementById('original-value');
@@ -134,6 +213,19 @@ const tariffExplanationP = document.getElementById('tariff-explanation');
 // Event listeners
 calculateBtn.addEventListener('click', calculateTariff);
 weightedCalcBtn.addEventListener('click', calculateWeightedTariff);
+productSelector.addEventListener('change', loadProductData);
+
+// Preset product buttons
+document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => loadProductData(btn.dataset.product));
+});
+
+// Value type buttons (COGS, ASP, MSRP)
+document.querySelectorAll('.value-btn').forEach(btn => {
+    btn.addEventListener('click', () => setValueType(btn.dataset.type));
+});
+
+let currentProduct = null;
 
 // Allow Enter key to trigger calculation
 document.addEventListener('keypress', function(e) {
@@ -184,6 +276,11 @@ function calculateTariff() {
 
     // Display results
     displayResults(productValue, finalTariffRate, tariffAmount, totalCost, countryOrigin, productCategory, tradeAgreement);
+    
+    // Show portfolio analysis if a specific product category is selected
+    if (productCategory && categoryData[productCategory]) {
+        showPortfolioAnalysis(productCategory, productValue);
+    }
 }
 
 function calculateWeightedTariff() {
@@ -339,6 +436,120 @@ productValueInput.addEventListener('input', function() {
     }
 });
 
+function loadProductData(productName) {
+    if (typeof productName === 'object') {
+        // Called from select dropdown
+        productName = productName.target.value;
+    }
+    
+    if (!productName || !productData[productName]) {
+        currentProduct = null;
+        return;
+    }
+    
+    currentProduct = productData[productName];
+    
+    // Auto-fill form fields
+    productCategorySelect.value = currentProduct.category;
+    
+    // Set China as default country since most products have China sourcing
+    const categoryInfo = categoryData[currentProduct.category];
+    if (categoryInfo && categoryInfo.countryMix.china > 0) {
+        countryOriginSelect.value = 'china';
+    }
+    
+    // Update value buttons to show actual values
+    updateValueButtons();
+    
+    // Auto-calculate if we have a value
+    if (productValueInput.value) {
+        calculateTariff();
+    }
+}
+
+function setValueType(type) {
+    if (!currentProduct) {
+        alert('Please select a product first');
+        return;
+    }
+    
+    productValueInput.value = currentProduct[type].toFixed(2);
+    calculateTariff();
+}
+
+function updateValueButtons() {
+    if (!currentProduct) return;
+    
+    const buttons = document.querySelectorAll('.value-btn');
+    buttons.forEach(btn => {
+        const type = btn.dataset.type;
+        const value = currentProduct[type];
+        btn.textContent = `${type.toUpperCase()}: $${value.toFixed(2)}`;
+    });
+}
+
+function showPortfolioAnalysis(category, singleProductValue) {
+    const categoryInfo = categoryData[category];
+    if (!categoryInfo) return;
+    
+    // Calculate different scenarios
+    const totalCogs = categoryInfo.totalCogs2025;
+    const currentMix = categoryInfo.countryMix;
+    const tariffRate = categoryInfo.tariffRate;
+    
+    // Current weighted tariff impact
+    const chinaPercentage = currentMix.china || 0;
+    const currentTariffRate = chinaPercentage * tariffRate;
+    const currentImpact = totalCogs * currentTariffRate;
+    
+    // 100% China scenario
+    const chinaImpact = totalCogs * tariffRate;
+    
+    // No China scenario (0% tariff)
+    const noChinaImpact = 0;
+    
+    // Annual impact based on product value
+    const annualImpact = (singleProductValue / totalCogs) * categoryInfo.totalRevenue2025 * currentTariffRate;
+    
+    // Update display
+    document.getElementById('current-impact').textContent = formatCurrency(currentImpact);
+    document.getElementById('china-impact').textContent = formatCurrency(chinaImpact);
+    document.getElementById('no-china-impact').textContent = formatCurrency(noChinaImpact);
+    document.getElementById('annual-impact').textContent = formatCurrency(annualImpact);
+    
+    // Generate recommendations
+    generateRecommendations(category, currentMix, tariffRate);
+    
+    portfolioAnalysisDiv.style.display = 'block';
+}
+
+function generateRecommendations(category, currentMix, tariffRate) {
+    const recommendationsDiv = document.getElementById('recommendations');
+    let recommendations = [];
+    
+    const chinaPercentage = currentMix.china || 0;
+    
+    if (chinaPercentage > 0.5) {
+        recommendations.push(`🎯 High China exposure (${(chinaPercentage * 100).toFixed(0)}%) - Consider diversifying sourcing`);
+    }
+    
+    if (tariffRate >= 0.25) {
+        recommendations.push(`⚠️ High tariff rate (${(tariffRate * 100).toFixed(1)}%) - Prioritize alternative sourcing countries`);
+    }
+    
+    // Suggest specific countries based on current mix
+    const altCountries = Object.keys(currentMix).filter(c => c !== 'china');
+    if (altCountries.length > 0) {
+        recommendations.push(`✅ Current alternative sources: ${altCountries.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(', ')}`);
+    }
+    
+    if (recommendations.length === 0) {
+        recommendations.push('✅ Current sourcing mix looks well-diversified');
+    }
+    
+    recommendationsDiv.innerHTML = recommendations.map(rec => `<p>${rec}</p>`).join('');
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     // Set default values if needed
@@ -347,4 +558,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add smooth scrolling for better UX
     document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Update value buttons initially
+    updateValueButtons();
 });

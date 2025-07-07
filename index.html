@@ -15,9 +15,41 @@
 
         <main>
             <div class="calculator-form">
+                <div class="quick-analysis">
+                    <h3>🚀 Quick Analysis</h3>
+                    <div class="preset-buttons">
+                        <button type="button" class="preset-btn" data-product="VX62R">VX62R Speakers</button>
+                        <button type="button" class="preset-btn" data-product="IS6">IS6 Speakers</button>
+                        <button type="button" class="preset-btn" data-product="CONNECT PRO MINI CASE">iPort Connect Pro</button>
+                        <button type="button" class="preset-btn" data-product="UA 2-125 DSP AMPLIFIER">UA 2-125 Amp</button>
+                        <button type="button" class="preset-btn" data-product="DSP 8-130 MKIII">DSP 8-130 MKIII</button>
+                    </div>
+                    <p class="preset-hint">Click a product above to load real pricing data, or enter custom values below</p>
+                </div>
+
+                <div class="input-group">
+                    <label for="product-selector">Select Your Product (Optional)</label>
+                    <select id="product-selector">
+                        <option value="">Choose from your portfolio...</option>
+                        <option value="VX62R">VX62R - $550 MSRP Speakers</option>
+                        <option value="IS6">IS6 - $1,515 MSRP Speakers</option>
+                        <option value="PS-C63RT WHITE EA">PS-C63RT - $235 MSRP Speakers</option>
+                        <option value="CONNECT PRO MINI CASE">Connect Pro Mini Case - $300 MSRP</option>
+                        <option value="C-PRO UTILITY CASE 11PRO M4 GN">C-Pro Utility Case - $250 MSRP</option>
+                        <option value="CONNECT MOUNT Case iPad A16 BK">Connect Mount Case - $125 MSRP</option>
+                        <option value="UA 2-125 DSP AMPLIFIER">UA 2-125 DSP Amplifier - $1,100 MSRP</option>
+                        <option value="DSP 8-130 MKIII">DSP 8-130 MKIII - $3,740 MSRP</option>
+                    </select>
+                </div>
+
                 <div class="input-group">
                     <label for="product-value">Product Value (USD)</label>
-                    <input type="number" id="product-value" placeholder="Enter product value" min="0" step="0.01">
+                    <input type="number" id="product-value" placeholder="Enter value or select product above" min="0" step="0.01">
+                    <div class="value-buttons">
+                        <button type="button" class="value-btn" data-type="cogs">Use COGS</button>
+                        <button type="button" class="value-btn" data-type="asp">Use ASP</button>
+                        <button type="button" class="value-btn" data-type="msrp">Use MSRP</button>
+                    </div>
                 </div>
 
                 <div class="input-group">
@@ -95,6 +127,37 @@
                 <div class="additional-info">
                     <h3>Additional Information</h3>
                     <p id="tariff-explanation">Tariff calculations are based on current US trade policies and may vary.</p>
+                </div>
+
+                <div class="portfolio-analysis" id="portfolio-analysis" style="display: none;">
+                    <h3>📊 Portfolio Impact Analysis</h3>
+                    <div class="impact-grid">
+                        <div class="impact-card">
+                            <h4>Current Tariff Impact</h4>
+                            <div class="impact-value" id="current-impact">$0</div>
+                            <p>Based on current sourcing mix</p>
+                        </div>
+                        <div class="impact-card">
+                            <h4>If 100% China Sourced</h4>
+                            <div class="impact-value danger" id="china-impact">$0</div>
+                            <p>Maximum tariff exposure</p>
+                        </div>
+                        <div class="impact-card">
+                            <h4>If No China Sourcing</h4>
+                            <div class="impact-value success" id="no-china-impact">$0</div>
+                            <p>Tariff-free scenario</p>
+                        </div>
+                        <div class="impact-card">
+                            <h4>Annual Portfolio Impact</h4>
+                            <div class="impact-value" id="annual-impact">$0</div>
+                            <p>Based on 2025 revenue data</p>
+                        </div>
+                    </div>
+                    
+                    <div class="sourcing-recommendations">
+                        <h4>💡 Sourcing Recommendations</h4>
+                        <div id="recommendations"></div>
+                    </div>
                 </div>
             </div>
         </main>
