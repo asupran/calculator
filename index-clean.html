@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Tariff Calculator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #333; margin-bottom: 10px; }
+        .header p { color: #666; }
+        
+        .step { background: white; border-radius: 10px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .step h2 { color: #333; margin-bottom: 15px; font-size: 1.3em; }
+        .step-number { background: #007bff; color: white; border-radius: 50%; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px; font-weight: bold; }
+        
+        .product-selector select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1.1em; }
+        .product-selector select:focus { outline: none; border-color: #007bff; }
+        
+        .category-buttons { display: flex; gap: 15px; margin-top: 15px; }
+        .category-btn { flex: 1; padding: 15px; border: 2px solid #ddd; border-radius: 8px; background: white; cursor: pointer; text-align: center; font-weight: 600; transition: all 0.3s; }
+        .category-btn:hover { border-color: #007bff; }
+        .category-btn.selected { background: #007bff; color: white; border-color: #007bff; }
+        
+        .country-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: center; margin-top: 20px; }
+        .country-section h3 { text-align: center; margin-bottom: 15px; color: #333; }
+        .country-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .country-btn { padding: 12px; border: 2px solid #ddd; border-radius: 8px; background: white; cursor: pointer; text-align: center; font-weight: 600; transition: all 0.3s; }
+        .country-btn:hover { border-color: #007bff; }
+        .country-btn.selected-a { background: #28a745; color: white; border-color: #28a745; }
+        .country-btn.selected-b { background: #dc3545; color: white; border-color: #dc3545; }
+        
+        .vs { background: #007bff; color: white; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; }
+        
+        .results { background: white; border-radius: 10px; padding: 25px; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: none; }
+        .results h2 { color: #333; margin-bottom: 20px; text-align: center; }
+        .winner { background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: center; }
+        .winner h3 { color: #155724; margin-bottom: 5px; }
+        .winner p { color: #155724; font-weight: 600; }
+        
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .country-result { border: 2px solid #ddd; border-radius: 8px; padding: 20px; }
+        .country-result.winner { border-color: #28a745; background: #f8fff9; }
+        .country-result h3 { color: #333; margin-bottom: 15px; text-align: center; }
+        .cost-line { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .cost-line.total { font-weight: bold; font-size: 1.1em; border-top: 1px solid #ddd; padding-top: 8px; margin-top: 8px; }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 Audio Equipment Tariff Calculator</h1>
+            <p>Compare manufacturing costs between two countries</p>
+        </div>
+        
+        <div class="step">
+            <h2><span class="step-number">1</span>Select Product</h2>
+            <div class="product-selector">
+                <select id="product-select">
+                    <option value="">Choose a product...</option>
+                    <option value="VX62R">VX62R Speakers ($550 MSRP)</option>
+                    <option value="IS6">IS6 Speakers ($1,515 MSRP)</option>
+                    <option value="PS-C63RT WHITE EA">PS-C63RT Speakers ($235 MSRP)</option>
+                    <option value="CONNECT PRO MINI CASE">Connect Pro Mini Case ($300 MSRP)</option>
+                    <option value="C-PRO UTILITY CASE 11PRO M4 GN">C-Pro Utility Case ($250 MSRP)</option>
+                    <option value="CONNECT MOUNT Case iPad A16 BK">Connect Mount Case ($125 MSRP)</option>
+                    <option value="UA 2-125 DSP AMPLIFIER">UA 2-125 DSP Amplifier ($1,100 MSRP)</option>
+                    <option value="DSP 8-130 MKIII">DSP 8-130 MKIII ($3,740 MSRP)</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="step">
+            <h2><span class="step-number">2</span>Select Tariff Category</h2>
+            <div class="category-buttons">
+                <button class="category-btn" data-category="speakers">
+                    🔊 Speakers<br>
+                    <small>China: 37.5%</small>
+                </button>
+                <button class="category-btn" data-category="amplifiers">
+                    🔊 Amplifiers<br>
+                    <small>China: 55%</small>
+                </button>
+                <button class="category-btn" data-category="iport">
+                    🔌 Electronics<br>
+                    <small>China: 55%</small>
+                </button>
+            </div>
+        </div>
+        
+        <div class="step">
+            <h2><span class="step-number">3</span>Compare Two Countries</h2>
+            <div class="country-grid">
+                <div class="country-section">
+                    <h3>Country A</h3>
+                    <div class="country-buttons">
+                        <button class="country-btn" data-country="china" data-selection="a">🇨🇳 China</button>
+                        <button class="country-btn" data-country="vietnam" data-selection="a">🇻🇳 Vietnam</button>
+                        <button class="country-btn" data-country="malaysia" data-selection="a">🇲🇾 Malaysia</button>
+                        <button class="country-btn" data-country="thailand" data-selection="a">🇹🇭 Thailand</button>
+                        <button class="country-btn" data-country="indonesia" data-selection="a">🇮🇩 Indonesia</button>
+                        <button class="country-btn" data-country="cambodia" data-selection="a">🇰🇭 Cambodia</button>
+                    </div>
+                </div>
+                
+                <div class="vs">VS</div>
+                
+                <div class="country-section">
+                    <h3>Country B</h3>
+                    <div class="country-buttons">
+                        <button class="country-btn" data-country="china" data-selection="b">🇨🇳 China</button>
+                        <button class="country-btn" data-country="vietnam" data-selection="b">🇻🇳 Vietnam</button>
+                        <button class="country-btn" data-country="malaysia" data-selection="b">🇲🇾 Malaysia</button>
+                        <button class="country-btn" data-country="thailand" data-selection="b">🇹🇭 Thailand</button>
+                        <button class="country-btn" data-country="indonesia" data-selection="b">🇮🇩 Indonesia</button>
+                        <button class="country-btn" data-country="cambodia" data-selection="b">🇰🇭 Cambodia</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="results" id="results">
+            <h2>📊 Comparison Results</h2>
+            
+            <div class="winner" id="winner">
+                <h3 id="winner-title">🏆 Winner: Vietnam</h3>
+                <p id="winner-text">Vietnam saves you $25.50 per unit compared to China</p>
+            </div>
+            
+            <div class="comparison">
+                <div class="country-result" id="country-a-result">
+                    <h3 id="country-a-name">Country A</h3>
+                    <div class="cost-line">
+                        <span>Base Manufacturing:</span>
+                        <span id="country-a-base">$0.00</span>
+                    </div>
+                    <div class="cost-line">
+                        <span id="country-a-tariff-label">Tariff:</span>
+                        <span id="country-a-tariff">$0.00</span>
+                    </div>
+                    <div class="cost-line total">
+                        <span>Total Cost:</span>
+                        <span id="country-a-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="country-result" id="country-b-result">
+                    <h3 id="country-b-name">Country B</h3>
+                    <div class="cost-line">
+                        <span>Base Manufacturing:</span>
+                        <span id="country-b-base">$0.00</span>
+                    </div>
+                    <div class="cost-line">
+                        <span id="country-b-tariff-label">Tariff:</span>
+                        <span id="country-b-tariff">$0.00</span>
+                    </div>
+                    <div class="cost-line total">
+                        <span>Total Cost:</span>
+                        <span id="country-b-total">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script-clean.js"></script>
+</body>
+</html>

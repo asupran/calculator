@@ -7,16 +7,20 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    
     <div class="container">
         <header>
             <h1>🎵 Audio Equipment Tariff Calculator</h1>
-            <p>Calculate OFFICIAL tariffs + manufacturing premiums: China 30% | Vietnam 20%+12.5% | Thailand 18%+12.5%</p>
+            <p>Compare manufacturing costs and tariff impacts across countries</p>
+            <div id="status-display" class="status-display" style="background: #fff3cd; padding: 10px; border-radius: 5px; margin: 10px 0; font-weight: bold; color: #333;">
+                🔴 Select: Product → Category → Two Countries
+            </div>
         </header>
 
         <main>
             <div class="calculator-form">
                 <div class="simple-selector">
-                    <h3>Select Your Product</h3>
+                    <h3>Step 1: Choose Your Product</h3>
                     <select id="product-selector" class="large-select">
                         <option value="">Choose a product to analyze...</option>
                         <option value="VX62R">VX62R Speakers ($550 MSRP)</option>
@@ -29,49 +33,169 @@
                         <option value="DSP 8-130 MKIII">DSP 8-130 MKIII ($3,740 MSRP)</option>
                     </select>
                 </div>
+                
+                <div class="category-selector">
+                    <h3>Step 1b: Confirm Tariff Category</h3>
+                    <p class="category-description">Select the tariff category that applies to your product:</p>
+                    <div class="category-buttons">
+                        <button type="button" class="category-btn" data-category="speakers">
+                            🔊 Speakers<br>
+                            <span class="category-rate">China: 37.5%</span>
+                        </button>
+                        <button type="button" class="category-btn" data-category="amplifiers">
+                            🔊 Amplifiers<br>
+                            <span class="category-rate">China: 55%</span>
+                        </button>
+                        <button type="button" class="category-btn" data-category="iport">
+                            🔌 Electronics/iPort<br>
+                            <span class="category-rate">China: 55%</span>
+                        </button>
+                    </div>
+                </div>
 
-                <div class="simple-country">
-                    <h3>Country of Origin</h3>
-                    <div class="country-buttons">
-                        <button type="button" class="country-btn" data-country="china">🇨🇳 China<br><span class="tariff-rate">30% Tariff<br>0% Premium</span></button>
-                        <button type="button" class="country-btn" data-country="vietnam">🇻🇳 Vietnam<br><span class="tariff-rate">20% Tariff<br>+12.5% Premium</span></button>
-                        <button type="button" class="country-btn" data-country="thailand">🇹🇭 Thailand<br><span class="tariff-rate">18% Tariff<br>+12.5% Premium</span></button>
-                        <button type="button" class="country-btn" data-country="cambodia">🇰🇭 Cambodia<br><span class="tariff-rate">25% Tariff<br>+15% Premium</span></button>
+                <div class="country-comparison-selector">
+                    <h3>Step 2: Choose Two Countries to Compare</h3>
+                    <div class="selection-instruction">
+                        <p>Select two countries to compare manufacturing costs and see detailed analysis</p>
+                    </div>
+                    
+                    <div class="country-selection-grid">
+                        <div class="country-selection-section">
+                            <h4>Country A:</h4>
+                            <div class="country-buttons" id="country-a-buttons">
+                                <button type="button" class="country-btn" data-country="china" data-selection="a">🇨🇳 China<br><span class="tariff-rate">37.5%* Speakers<br>55%* Electronics</span></button>
+                                <button type="button" class="country-btn" data-country="vietnam" data-selection="a">🇻🇳 Vietnam<br><span class="tariff-rate">20% Tariff<br>+12.5% Premium</span></button>
+                                <button type="button" class="country-btn" data-country="malaysia" data-selection="a">🇲🇾 Malaysia<br><span class="tariff-rate">24% Tariff<br>+12.5% Premium</span></button>
+                                <button type="button" class="country-btn" data-country="thailand" data-selection="a">🇹🇭 Thailand<br><span class="tariff-rate">36% Tariff<br>+12.5% Premium</span></button>
+                                <button type="button" class="country-btn" data-country="indonesia" data-selection="a">🇮🇩 Indonesia<br><span class="tariff-rate">32% Tariff<br>+12.5% Premium</span></button>
+                                <button type="button" class="country-btn" data-country="cambodia" data-selection="a">🇰🇭 Cambodia<br><span class="tariff-rate">49% Tariff<br>+15% Premium</span></button>
+                            </div>
+                        </div>
+                        
+                        <div class="vs-divider">
+                            <div class="vs-text">VS</div>
+                        </div>
+                        
+                        <div class="country-selection-section">
+                            <h4>Country B:</h4>
+                            <div class="country-buttons" id="country-b-buttons">
+                                <button type="button" class="country-btn" data-country="china" data-selection="b">🇨🇳 China<br><span class="tariff-rate">37.5%* Speakers<br>55%* Electronics</span></button>
+                                <button type="button" class="country-btn" data-country="vietnam" data-selection="b">🇻🇳 Vietnam<br><span class="tariff-rate">20% Tariff<br>+12.5% Premium</span></button>
+                                <button type="button" class="country-btn" data-country="malaysia" data-selection="b">🇲🇾 Malaysia<br><span class="tariff-rate">24% Tariff<br>+12.5% Premium</span></button>
+                                <button type="button" class="country-btn" data-country="thailand" data-selection="b">🇹🇭 Thailand<br><span class="tariff-rate">36% Tariff<br>+12.5% Premium</span></button>
+                                <button type="button" class="country-btn" data-country="indonesia" data-selection="b">🇮🇩 Indonesia<br><span class="tariff-rate">32% Tariff<br>+12.5% Premium</span></button>
+                                <button type="button" class="country-btn" data-country="cambodia" data-selection="b">🇰🇭 Cambodia<br><span class="tariff-rate">49% Tariff<br>+15% Premium</span></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div id="results-simple" class="results-simple" style="display: none;">
-                    <h3>Tariff Impact</h3>
+                    <h3>💰 Your Cost Comparison Results</h3>
                     <div class="impact-summary">
                         <div class="cost-breakdown">
                             <div class="cost-row">
-                                <span>Product Cost:</span>
+                                <span>Manufacturing Cost:</span>
                                 <span id="product-cost">$0.00</span>
                             </div>
                             <div class="cost-row tariff-cost">
-                                <span>Tariff Cost:</span>
+                                <span>Import Tax (Tariff):</span>
                                 <span id="tariff-cost">$0.00</span>
                             </div>
                             <div class="cost-row total-cost">
-                                <span>Total Cost:</span>
+                                <span>Total Cost to You:</span>
                                 <span id="total-cost-simple">$0.00</span>
                             </div>
                         </div>
                         
+                    </div>
+                        
                         <div class="quick-scenarios">
-                            <h4>Quick Comparison</h4>
+                            <h4>📊 Compare Top Countries - Total Cost Breakdown</h4>
                             <div class="scenario-grid">
                                 <div class="scenario-card">
-                                    <div class="scenario-title">China</div>
-                                    <div class="scenario-cost" id="china-cost">$0</div>
+                                    <div class="scenario-title">🇨🇳 China</div>
+                                    <div class="scenario-breakdown">
+                                        <div class="breakdown-item">
+                                            <span class="breakdown-label">Base COGS:</span>
+                                            <span class="breakdown-value" id="china-base">$0</span>
+                                        </div>
+                                        <div class="breakdown-item">
+                                            <span class="breakdown-label">Mfg Premium:</span>
+                                            <span class="breakdown-value premium">+0%</span>
+                                        </div>
+                                        <div class="breakdown-item">
+                                            <span class="breakdown-label">Tariff:</span>
+                                            <span class="breakdown-value" id="china-tariff-amount">$0</span>
+                                        </div>
+                                        <div class="breakdown-item total">
+                                            <span class="breakdown-label">Total:</span>
+                                            <span class="breakdown-value" id="china-cost">$0</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="scenario-card">
-                                    <div class="scenario-title">Vietnam</div>
-                                    <div class="scenario-cost" id="vietnam-cost">$0</div>
+                                    <div class="scenario-title">🇻🇳 Vietnam</div>
+                                    <div class="scenario-breakdown">
+                                        <div class="breakdown-item">
+                                            <span class="breakdown-label">Base COGS:</span>
+                                            <span class="breakdown-value" id="vietnam-base">$0</span>
+                                        </div>
+                                        <div class="breakdown-item">
+                                            <span class="breakdown-label">Mfg Premium:</span>
+                                            <span class="breakdown-value premium">+12.5%</span>
+                                        </div>
+                                        <div class="breakdown-item">
+                                            <span class="breakdown-label">Tariff:</span>
+                                            <span class="breakdown-value" id="vietnam-tariff-amount">$0</span>
+                                        </div>
+                                        <div class="breakdown-item total">
+                                            <span class="breakdown-label">Total:</span>
+                                            <span class="breakdown-value" id="vietnam-cost">$0</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="scenario-card">
-                                    <div class="scenario-title">Thailand</div>
-                                    <div class="scenario-cost" id="thailand-cost">$0</div>
+                                    <div class="scenario-title">🇲🇾 Malaysia</div>
+                                    <div class="scenario-breakdown">
+                                        <div class="breakdown-item">
+                                            <span class="breakdown-label">Base COGS:</span>
+                                            <span class="breakdown-value" id="malaysia-base">$0</span>
+                                        </div>
+                                        <div class="breakdown-item">
+                                            <span class="breakdown-label">Mfg Premium:</span>
+                                            <span class="breakdown-value premium">+12.5%</span>
+                                        </div>
+                                        <div class="breakdown-item">
+                                            <span class="breakdown-label">Tariff:</span>
+                                            <span class="breakdown-value" id="malaysia-tariff-amount">$0</span>
+                                        </div>
+                                        <div class="breakdown-item total">
+                                            <span class="breakdown-label">Total:</span>
+                                            <span class="breakdown-value" id="malaysia-cost">$0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="scenario-card">
+                                    <div class="scenario-title">🇹🇭 Thailand</div>
+                                    <div class="scenario-breakdown">
+                                        <div class="breakdown-item">
+                                            <span class="breakdown-label">Base COGS:</span>
+                                            <span class="breakdown-value" id="thailand-base">$0</span>
+                                        </div>
+                                        <div class="breakdown-item">
+                                            <span class="breakdown-label">Mfg Premium:</span>
+                                            <span class="breakdown-value premium">+12.5%</span>
+                                        </div>
+                                        <div class="breakdown-item">
+                                            <span class="breakdown-label">Tariff:</span>
+                                            <span class="breakdown-value" id="thailand-tariff-amount">$0</span>
+                                        </div>
+                                        <div class="breakdown-item total">
+                                            <span class="breakdown-label">Total:</span>
+                                            <span class="breakdown-value" id="thailand-cost">$0</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -81,49 +205,144 @@
                             <div class="math-steps" id="math-steps"></div>
                         </div>
                         
+                        <div class="ai-analysis" id="ai-analysis">
+                            <h4>🤖 AI Tariff Analysis</h4>
+                            <div class="analysis-buttons">
+                                <button type="button" class="analysis-btn" id="analyze-trends">
+                                    <span class="btn-icon">📈</span>
+                                    Analyze Current Trends
+                                </button>
+                                <button type="button" class="analysis-btn" id="analyze-country">
+                                    <span class="btn-icon">🏭</span>
+                                    Country Risk Assessment
+                                </button>
+                                <button type="button" class="analysis-btn" id="analyze-forecast">
+                                    <span class="btn-icon">🔮</span>
+                                    6-Month Forecast
+                                </button>
+                            </div>
+                            <div class="analysis-results" id="analysis-results" style="display: none;">
+                                <div class="analysis-content" id="analysis-content"></div>
+                            </div>
+                        </div>
+                        
                         <div class="pricing-strategy" id="pricing-strategy">
-                            <h4>💰 Pricing Strategy Options</h4>
+                            <h4>🎯 Pricing Strategy vs China Baseline</h4>
+                            <div class="country-comparison" id="country-comparison" style="display: none;">
+                                <div class="comparison-cards">
+                                    <div class="comparison-card country-a">
+                                        <h5 id="country-a-name">🌍 Country A</h5>
+                                        <div class="comparison-metric">
+                                            <span class="metric-label">Total Cost:</span>
+                                            <span class="metric-value" id="country-a-total-cost">$0.00</span>
+                                        </div>
+                                        <div class="comparison-metric">
+                                            <span class="metric-label">At Current Price:</span>
+                                            <span class="metric-value" id="country-a-selling-price">$0.00</span>
+                                        </div>
+                                        <div class="comparison-metric">
+                                            <span class="metric-label">Profit per Unit:</span>
+                                            <span class="metric-value" id="country-a-profit">$0.00</span>
+                                        </div>
+                                        <div class="comparison-metric">
+                                            <span class="metric-label">Profit Margin:</span>
+                                            <span class="metric-value" id="country-a-margin">0%</span>
+                                        </div>
+                                    </div>
+                                    <div class="comparison-card country-b">
+                                        <h5 id="country-b-name">🌍 Country B</h5>
+                                        <div class="comparison-metric">
+                                            <span class="metric-label">Total Cost:</span>
+                                            <span class="metric-value" id="country-b-total-cost">$0.00</span>
+                                        </div>
+                                        <div class="comparison-metric impact">
+                                            <span class="metric-label">Cost Difference:</span>
+                                            <span class="metric-value" id="cost-difference">+$0.00</span>
+                                        </div>
+                                        <div class="comparison-metric">
+                                            <span class="metric-label">Profit per Unit:</span>
+                                            <span class="metric-value" id="country-b-profit">$0.00</span>
+                                        </div>
+                                        <div class="comparison-metric">
+                                            <span class="metric-label">Profit Margin:</span>
+                                            <span class="metric-value" id="country-b-margin">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="comparison-summary">
+                                    <div class="winner-card" id="winner-card" style="display: none;">
+                                        <h5>🏆 Recommendation</h5>
+                                        <p id="winner-text">Country A is better by $0.00 per unit</p>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="strategy-buttons">
-                                <button type="button" class="strategy-btn" id="show-math">Show Math</button>
-                                <button type="button" class="strategy-btn" id="protect-margin-dollars">Protect Margin $</button>
-                                <button type="button" class="strategy-btn" id="protect-margin-percent">Protect Margin %</button>
-                                <button type="button" class="strategy-btn" id="absorb-increase">Absorb Cost</button>
+                                <button type="button" class="strategy-btn" id="show-math">Show Details</button>
+                                <button type="button" class="strategy-btn" id="protect-margin-dollars" title="Keep same dollar profit as China sourcing">Keep Same Profit $</button>
+                                <button type="button" class="strategy-btn" id="protect-margin-percent" title="Keep same percentage profit as China sourcing">Keep Same Profit %</button>
+                                <button type="button" class="strategy-btn" id="absorb-increase" title="Keep current price, company absorbs cost increase">Absorb the Cost</button>
+                            </div>
+                            
+                            <div class="cost-impact-summary" id="cost-impact-summary" style="display: none;">
+                                <h5>📊 Cost Impact vs China</h5>
+                                <div class="impact-row">
+                                    <span>Cost Increase:</span>
+                                    <span id="cost-increase-amount">+$0.00</span>
+                                </div>
+                                <div class="impact-row">
+                                    <span>Percentage Increase:</span>
+                                    <span id="cost-increase-percent">+0.0%</span>
+                                </div>
+                                <div class="strategy-explanation">
+                                    <p><strong>Keep Same Profit $:</strong> Raise your selling price to keep the same dollar profit as China</p>
+                                    <p><strong>Keep Same Profit %:</strong> Raise your selling price to keep the same profit percentage as China</p>
+                                    <p><strong>Absorb the Cost:</strong> Keep your current selling price and take lower profits</p>
+                                </div>
                             </div>
                             
                             <div class="pricing-results" id="pricing-results" style="display: none;">
                                 <div class="pricing-breakdown">
-                                    <div class="pricing-row">
-                                        <span>Current ASP:</span>
-                                        <span id="current-asp">$0.00</span>
-                                    </div>
-                                    <div class="pricing-row">
-                                        <span>Current Margin $:</span>
-                                        <span id="current-margin-dollars">$0.00</span>
-                                    </div>
-                                    <div class="pricing-row">
-                                        <span>Current Margin %:</span>
-                                        <span id="current-margin-percent">0%</span>
+                                    <h5>📊 Strategy Results</h5>
+                                    <div class="pricing-section">
+                                        <h6>Current Situation (China Baseline)</h6>
+                                        <div class="pricing-row">
+                                            <span>Current Selling Price:</span>
+                                            <span id="current-asp">$0.00</span>
+                                        </div>
+                                        <div class="pricing-row">
+                                            <span>Current Profit per Unit:</span>
+                                            <span id="current-margin-dollars">$0.00</span>
+                                        </div>
+                                        <div class="pricing-row">
+                                            <span>Current Profit Margin:</span>
+                                            <span id="current-margin-percent">0%</span>
+                                        </div>
                                     </div>
                                     <div class="pricing-divider"></div>
-                                    <div class="pricing-row recommended">
-                                        <span id="strategy-label">Recommended ASP:</span>
-                                        <span id="recommended-asp">$0.00</span>
-                                    </div>
-                                    <div class="pricing-row">
-                                        <span>New Margin $:</span>
-                                        <span id="new-margin-dollars">$0.00</span>
-                                    </div>
-                                    <div class="pricing-row">
-                                        <span>New Margin %:</span>
-                                        <span id="new-margin-percent">0%</span>
-                                    </div>
-                                    <div class="pricing-row impact">
-                                        <span>Price Increase:</span>
-                                        <span id="price-increase">+$0.00</span>
+                                    <div class="pricing-section">
+                                        <h6 id="strategy-section-title">Recommended Strategy</h6>
+                                        <div class="pricing-row recommended">
+                                            <span id="strategy-label">Recommended Selling Price:</span>
+                                            <span id="recommended-asp">$0.00</span>
+                                        </div>
+                                        <div class="pricing-row">
+                                            <span>New Profit per Unit:</span>
+                                            <span id="new-margin-dollars">$0.00</span>
+                                        </div>
+                                        <div class="pricing-row">
+                                            <span>New Profit Margin:</span>
+                                            <span id="new-margin-percent">0%</span>
+                                        </div>
+                                        <div class="pricing-row impact">
+                                            <span>Price Change Needed:</span>
+                                            <span id="price-increase">+$0.00</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        
+                        
                     </div>
                 </div>
             </div>
