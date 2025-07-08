@@ -608,6 +608,21 @@ footer {
     }
 }
 
+/* Math Details Styling */
+.math-step {
+    padding: 12px;
+    margin: 8px 0;
+    background-color: var(--bg-light);
+    border-left: 4px solid var(--primary);
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.math-step strong {
+    color: var(--primary);
+    margin-right: 8px;
+}
+
 /* Utility Classes */
 .hidden {
     display: none !important;

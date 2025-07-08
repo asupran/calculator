@@ -88,12 +88,20 @@ function setupEventListeners() {
         });
     });
 
-    // Strategy buttons
-    document.querySelectorAll('.strategy-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            showPricingStrategy(btn.onclick.toString().match(/'([^']+)'/)[1]);
-        });
-    });
+    // Strategy buttons (need individual handlers)
+    const protectDollarsBtn = document.querySelector('[onclick*="protect-dollars"]');
+    const protectPercentBtn = document.querySelector('[onclick*="protect-percent"]');
+    const absorbBtn = document.querySelector('[onclick*="absorb"]');
+    
+    if (protectDollarsBtn) {
+        protectDollarsBtn.addEventListener('click', () => showPricingStrategy('protect-dollars'));
+    }
+    if (protectPercentBtn) {
+        protectPercentBtn.addEventListener('click', () => showPricingStrategy('protect-percent'));
+    }
+    if (absorbBtn) {
+        absorbBtn.addEventListener('click', () => showPricingStrategy('absorb'));
+    }
 
     console.log('Event listeners set up successfully');
 }
@@ -290,6 +298,11 @@ function switchTab(tabId) {
         content.classList.remove('active');
     });
     document.getElementById(`tab-${tabId}`).classList.add('active');
+    
+    // If switching to details tab, populate the math
+    if (tabId === 'details' && calculationResult) {
+        showDetailedMath();
+    }
 }
 
 // Pricing strategy functions
@@ -418,6 +431,9 @@ function showDetailedMath() {
             <strong>Step 5:</strong> Total cost = $${result.adjustedCogs.toFixed(2)} + $${result.tariffCost.toFixed(2)} = <strong>$${result.totalCost.toFixed(2)}</strong>
         </div>
     `;
+    
+    // Switch to details tab when math is shown
+    switchTab('details');
 }
 
 console.log('Improved calculator script loaded successfully');
