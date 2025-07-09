@@ -44,6 +44,9 @@ let selectedCountryB = null;
 let countryACost = null;
 let countryBCost = null;
 
+// Chart instance
+let costComparisonChart = null;
+
 // Cached DOM elements for performance
 const domElements = {
     // Results elements
@@ -374,6 +377,12 @@ function updateMainCostBreakdown() {
     
     // Update quick scenarios for all countries
     updateQuickScenarios();
+    
+    // Create or update chart
+    createCostComparisonChart();
+    
+    // Update quick insights
+    updateQuickInsights();
 }
 
 function updateQuickScenarios() {
@@ -497,6 +506,97 @@ window.addEventListener('load', function() {
         });
     }
     
+    // Export to CSV button
+    const exportCsvBtn = document.getElementById('export-csv');
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', function() {
+            exportToCSV();
+        });
+    }
+    
+    // Save/Load comparison buttons
+    const saveComparisonBtn = document.getElementById('save-comparison');
+    const loadComparisonBtn = document.getElementById('load-comparison');
+    
+    if (saveComparisonBtn) {
+        saveComparisonBtn.addEventListener('click', function() {
+            openSaveLoadModal('save');
+        });
+    }
+    
+    if (loadComparisonBtn) {
+        loadComparisonBtn.addEventListener('click', function() {
+            openSaveLoadModal('load');
+        });
+    }
+    
+    // Save/Load modal controls
+    const closeSaveLoadModal = document.getElementById('close-save-load-modal');
+    if (closeSaveLoadModal) {
+        closeSaveLoadModal.addEventListener('click', function() {
+            document.getElementById('save-load-modal').style.display = 'none';
+        });
+    }
+    
+    const saveComparisonBtnModal = document.getElementById('save-comparison-btn');
+    if (saveComparisonBtnModal) {
+        saveComparisonBtnModal.addEventListener('click', function() {
+            saveCurrentComparison();
+        });
+    }
+    
+    // Bulk comparison button
+    const bulkCompareBtn = document.getElementById('bulk-compare');
+    if (bulkCompareBtn) {
+        bulkCompareBtn.addEventListener('click', function() {
+            openBulkModal();
+        });
+    }
+    
+    // Product search functionality
+    const productSearch = document.getElementById('product-search');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    
+    if (productSearch) {
+        productSearch.addEventListener('input', function() {
+            filterProducts(this.value, getActiveFilter());
+        });
+    }
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Update active filter button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter products
+            const searchText = productSearch ? productSearch.value : '';
+            filterProducts(searchText, this.dataset.category);
+        });
+    });
+    
+    // Bulk modal controls
+    const closeBulkModal = document.getElementById('close-bulk-modal');
+    if (closeBulkModal) {
+        closeBulkModal.addEventListener('click', function() {
+            document.getElementById('bulk-modal').style.display = 'none';
+        });
+    }
+    
+    const runBulkComparison = document.getElementById('run-bulk-comparison');
+    if (runBulkComparison) {
+        runBulkComparison.addEventListener('click', function() {
+            performBulkComparison();
+        });
+    }
+    
+    const exportBulkCsv = document.getElementById('export-bulk-csv');
+    if (exportBulkCsv) {
+        exportBulkCsv.addEventListener('click', function() {
+            exportBulkResultsToCSV();
+        });
+    }
+    
     // AI Analysis buttons
     const analyzeTrendsBtn = document.getElementById('analyze-trends');
     const analyzeCountryBtn = document.getElementById('analyze-country');
@@ -522,11 +622,11 @@ window.addEventListener('load', function() {
     
     // Portfolio functionality removed for simplicity
     
-    // Sourcing wizard button
-    const getRecommendationsBtn = document.getElementById('get-recommendations');
-    if (getRecommendationsBtn) {
-        getRecommendationsBtn.addEventListener('click', getSmartRecommendations);
-    }
+    // Sourcing wizard button - commented out as HTML elements don't exist
+    // const getRecommendationsBtn = document.getElementById('get-recommendations');
+    // if (getRecommendationsBtn) {
+    //     getRecommendationsBtn.addEventListener('click', getSmartRecommendations);
+    // }
     
 });
 
@@ -1118,8 +1218,8 @@ function hideChinaMessage() {
 }
 
 async function performAIAnalysis(analysisType) {
-    if (!currentProduct || !currentCountry) {
-        alert('Please select a product and country first');
+    if (!currentProduct || !selectedCountryA || !selectedCountryB) {
+        alert('Please select a product and two countries first');
         return;
     }
     
@@ -1131,6 +1231,9 @@ async function performAIAnalysis(analysisType) {
     button.classList.add('loading');
     button.disabled = true;
     button.textContent = 'Analyzing...';
+    
+    // Use the country with higher cost as the focus for analysis
+    const analysisCountry = countryACost.totalCost >= countryBCost.totalCost ? selectedCountryA : selectedCountryB;
     
     try {
         let query = '';
@@ -1277,6 +1380,588 @@ function generateAIAnalysis(type, country, product) {
                 </ul>
             `;
     }
+}
+
+// Chart creation function
+function createCostComparisonChart() {
+    if (!currentProduct || !selectedCountryA || !selectedCountryB || !countryACost || !countryBCost) {
+        return;
+    }
+    
+    const ctx = document.getElementById('costComparisonChart').getContext('2d');
+    
+    // Destroy existing chart if it exists
+    if (costComparisonChart) {
+        costComparisonChart.destroy();
+    }
+    
+    const data = {
+        labels: [countryNames[selectedCountryA], countryNames[selectedCountryB]],
+        datasets: [
+            {
+                label: 'Manufacturing Cost',
+                data: [countryACost.manufacturingCost, countryBCost.manufacturingCost],
+                backgroundColor: ['#3498db', '#e74c3c'],
+                borderColor: ['#2980b9', '#c0392b'],
+                borderWidth: 2
+            },
+            {
+                label: 'Tariff Cost',
+                data: [countryACost.tariffCost, countryBCost.tariffCost],
+                backgroundColor: ['#f39c12', '#e67e22'],
+                borderColor: ['#d68910', '#d35400'],
+                borderWidth: 2
+            }
+        ]
+    };
+    
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: `Cost Breakdown: ${Object.keys(products).find(key => products[key] === currentProduct)}`,
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    }
+                },
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        afterLabel: function(context) {
+                            const country = context.label;
+                            const costs = country === countryNames[selectedCountryA] ? countryACost : countryBCost;
+                            return `Total: $${costs.totalCost.toFixed(2)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Countries'
+                    }
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cost ($)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toFixed(0);
+                        }
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutQuart'
+            }
+        }
+    };
+    
+    costComparisonChart = new Chart(ctx, config);
+}
+
+// Update quick insights
+function updateQuickInsights() {
+    if (!currentProduct || !selectedCountryA || !selectedCountryB || !countryACost || !countryBCost) {
+        return;
+    }
+    
+    const currentASP = currentProduct.asp;
+    const costA = countryACost.totalCost;
+    const costB = countryBCost.totalCost;
+    const profitA = currentASP - costA;
+    const profitB = currentASP - costB;
+    const marginA = (profitA / currentASP) * 100;
+    const marginB = (profitB / currentASP) * 100;
+    
+    const isABetter = costA < costB;
+    const winnerCountry = isABetter ? selectedCountryA : selectedCountryB;
+    const savings = Math.abs(costA - costB);
+    const minCost = Math.min(costA, costB);
+    const maxCost = Math.max(costA, costB);
+    const marginDiff = Math.abs(marginA - marginB);
+    
+    // Update winner card
+    document.getElementById('winner-country').textContent = countryNames[winnerCountry];
+    document.getElementById('winner-savings').textContent = `$${savings.toFixed(2)} savings per unit`;
+    
+    // Update cost range card
+    document.getElementById('cost-range').textContent = 'Cost Range';
+    document.getElementById('cost-spread').textContent = `$${minCost.toFixed(2)} - $${maxCost.toFixed(2)}`;
+    
+    // Update margin impact card
+    document.getElementById('margin-impact').textContent = 'Margin Impact';
+    const higherMargin = Math.max(marginA, marginB);
+    const lowerMargin = Math.min(marginA, marginB);
+    document.getElementById('margin-change').textContent = `${marginDiff.toFixed(1)}% difference (${higherMargin.toFixed(1)}% vs ${lowerMargin.toFixed(1)}%)`;
+}
+
+// Export to CSV functionality
+function exportToCSV() {
+    if (!currentProduct || !selectedCountryA || !selectedCountryB || !countryACost || !countryBCost) {
+        alert('Please complete a comparison before exporting');
+        return;
+    }
+    
+    const productName = Object.keys(products).find(key => products[key] === currentProduct);
+    const currentASP = currentProduct.asp;
+    
+    // Create CSV content
+    const csvRows = [
+        ['Tariff Calculator Export', new Date().toLocaleString()],
+        [],
+        ['Product Information'],
+        ['Product', productName],
+        ['Category', selectedCategory],
+        ['Current Selling Price', '$' + currentASP.toFixed(2)],
+        ['Base COGS', '$' + currentProduct.cogs.toFixed(2)],
+        [],
+        ['Country Comparison'],
+        ['Metric', countryNames[selectedCountryA], countryNames[selectedCountryB]],
+        ['Manufacturing Premium', (premiums[selectedCountryA] * 100).toFixed(1) + '%', (premiums[selectedCountryB] * 100).toFixed(1) + '%'],
+        ['Manufacturing Cost', '$' + countryACost.manufacturingCost.toFixed(2), '$' + countryBCost.manufacturingCost.toFixed(2)],
+        ['Tariff Rate', (countryACost.tariffRate * 100).toFixed(1) + '%', (countryBCost.tariffRate * 100).toFixed(1) + '%'],
+        ['Tariff Cost', '$' + countryACost.tariffCost.toFixed(2), '$' + countryBCost.tariffCost.toFixed(2)],
+        ['Total Cost', '$' + countryACost.totalCost.toFixed(2), '$' + countryBCost.totalCost.toFixed(2)],
+        ['Profit per Unit', '$' + (currentASP - countryACost.totalCost).toFixed(2), '$' + (currentASP - countryBCost.totalCost).toFixed(2)],
+        ['Profit Margin', ((currentASP - countryACost.totalCost) / currentASP * 100).toFixed(1) + '%', ((currentASP - countryBCost.totalCost) / currentASP * 100).toFixed(1) + '%'],
+        [],
+        ['Summary'],
+        ['Cost Difference', '$' + Math.abs(countryACost.totalCost - countryBCost.totalCost).toFixed(2)],
+        ['Better Option', countryACost.totalCost < countryBCost.totalCost ? countryNames[selectedCountryA] : countryNames[selectedCountryB]],
+        ['Savings per Unit', '$' + Math.abs(countryACost.totalCost - countryBCost.totalCost).toFixed(2)]
+    ];
+    
+    // Convert to CSV string
+    const csvContent = csvRows.map(row => row.map(cell => {
+        // Escape quotes and wrap in quotes if contains comma
+        const cellStr = String(cell || '');
+        if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+            return '"' + cellStr.replace(/"/g, '""') + '"';
+        }
+        return cellStr;
+    }).join(',')).join('\n');
+    
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `tariff-comparison-${productName}-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Show success feedback
+    const exportBtn = document.getElementById('export-csv');
+    const originalText = exportBtn.textContent;
+    exportBtn.textContent = '✅ Exported!';
+    exportBtn.style.background = '#28a745';
+    
+    setTimeout(() => {
+        exportBtn.textContent = originalText;
+        exportBtn.style.background = '';
+    }, 2000);
+}
+
+// Bulk comparison functionality
+let bulkResults = [];
+
+function openBulkModal() {
+    document.getElementById('bulk-modal').style.display = 'block';
+    // Pre-select countries if already selected in main interface
+    if (selectedCountryA) {
+        document.getElementById('bulk-country-a').value = selectedCountryA;
+    }
+    if (selectedCountryB) {
+        document.getElementById('bulk-country-b').value = selectedCountryB;
+    }
+}
+
+function performBulkComparison() {
+    const countryA = document.getElementById('bulk-country-a').value;
+    const countryB = document.getElementById('bulk-country-b').value;
+    
+    if (countryA === countryB) {
+        alert('Please select two different countries to compare');
+        return;
+    }
+    
+    bulkResults = [];
+    
+    // Compare all products
+    Object.entries(products).forEach(([productName, productData]) => {
+        const costA = calculateCountryCostForProduct(countryA, productData);
+        const costB = calculateCountryCostForProduct(countryB, productData);
+        
+        const currentASP = productData.asp;
+        const profitA = currentASP - costA.totalCost;
+        const profitB = currentASP - costB.totalCost;
+        const marginA = (profitA / currentASP) * 100;
+        const marginB = (profitB / currentASP) * 100;
+        const costDiff = costB.totalCost - costA.totalCost;
+        
+        bulkResults.push({
+            productName,
+            productData,
+            countryA: {
+                country: countryA,
+                cost: costA,
+                profit: profitA,
+                margin: marginA
+            },
+            countryB: {
+                country: countryB,
+                cost: costB,
+                profit: profitB,
+                margin: marginB
+            },
+            costDifference: costDiff,
+            winner: costA.totalCost < costB.totalCost ? countryA : countryB
+        });
+    });
+    
+    // Sort by cost difference
+    bulkResults.sort((a, b) => Math.abs(b.costDifference) - Math.abs(a.costDifference));
+    
+    displayBulkResults(countryA, countryB);
+}
+
+function calculateCountryCostForProduct(country, productData) {
+    const baseCogs = productData.cogs;
+    const category = productData.category;
+    const premium = premiums[country] || 0;
+    
+    const manufacturingCost = baseCogs * (1 + premium);
+    const tariffRate = tariffs[country][category] || 0;
+    const tariffCost = manufacturingCost * tariffRate;
+    const totalCost = manufacturingCost + tariffCost;
+    
+    return {
+        baseCogs,
+        premium,
+        manufacturingCost,
+        tariffRate,
+        tariffCost,
+        totalCost
+    };
+}
+
+function displayBulkResults(countryA, countryB) {
+    const resultsDiv = document.getElementById('bulk-results');
+    
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Current Price</th>
+                    <th>${countryNames[countryA]} Total Cost</th>
+                    <th>${countryNames[countryA]} Margin</th>
+                    <th>${countryNames[countryB]} Total Cost</th>
+                    <th>${countryNames[countryB]} Margin</th>
+                    <th>Cost Difference</th>
+                    <th>Better Option</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    let totalSavingsCountryA = 0;
+    let totalSavingsCountryB = 0;
+    
+    bulkResults.forEach(result => {
+        const isDiffPositive = result.costDifference > 0;
+        const diffClass = isDiffPositive ? 'cost-increase' : 'savings';
+        
+        if (result.winner === countryA) {
+            totalSavingsCountryA += Math.abs(result.costDifference);
+        } else {
+            totalSavingsCountryB += Math.abs(result.costDifference);
+        }
+        
+        html += `
+            <tr>
+                <td><strong>${result.productName}</strong></td>
+                <td>${result.productData.category}</td>
+                <td>$${result.productData.asp.toFixed(2)}</td>
+                <td>$${result.countryA.cost.totalCost.toFixed(2)}</td>
+                <td>${result.countryA.margin.toFixed(1)}%</td>
+                <td>$${result.countryB.cost.totalCost.toFixed(2)}</td>
+                <td>${result.countryB.margin.toFixed(1)}%</td>
+                <td class="${diffClass}">${isDiffPositive ? '+' : '-'}$${Math.abs(result.costDifference).toFixed(2)}</td>
+                <td><strong>${countryNames[result.winner]}</strong></td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </tbody>
+            <tfoot>
+                <tr style="font-weight: bold; background: #f0f0f0;">
+                    <td colspan="7">Total Potential Savings</td>
+                    <td colspan="2">
+                        ${countryNames[countryA]}: $${totalSavingsCountryA.toFixed(2)}<br>
+                        ${countryNames[countryB]}: $${totalSavingsCountryB.toFixed(2)}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    `;
+    
+    resultsDiv.innerHTML = html;
+}
+
+function exportBulkResultsToCSV() {
+    if (bulkResults.length === 0) {
+        alert('Please run a bulk comparison first');
+        return;
+    }
+    
+    const countryA = bulkResults[0].countryA.country;
+    const countryB = bulkResults[0].countryB.country;
+    
+    const csvRows = [
+        ['Bulk Product Comparison', new Date().toLocaleString()],
+        ['Countries', countryNames[countryA], 'vs', countryNames[countryB]],
+        [],
+        ['Product', 'Category', 'Current Price', 
+         countryNames[countryA] + ' Cost', countryNames[countryA] + ' Margin %',
+         countryNames[countryB] + ' Cost', countryNames[countryB] + ' Margin %',
+         'Cost Difference', 'Better Option']
+    ];
+    
+    bulkResults.forEach(result => {
+        csvRows.push([
+            result.productName,
+            result.productData.category,
+            '$' + result.productData.asp.toFixed(2),
+            '$' + result.countryA.cost.totalCost.toFixed(2),
+            result.countryA.margin.toFixed(1) + '%',
+            '$' + result.countryB.cost.totalCost.toFixed(2),
+            result.countryB.margin.toFixed(1) + '%',
+            (result.costDifference >= 0 ? '+' : '') + '$' + result.costDifference.toFixed(2),
+            countryNames[result.winner]
+        ]);
+    });
+    
+    // Convert to CSV string
+    const csvContent = csvRows.map(row => row.map(cell => {
+        const cellStr = String(cell || '');
+        if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+            return '"' + cellStr.replace(/"/g, '""') + '"';
+        }
+        return cellStr;
+    }).join(',')).join('\n');
+    
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `bulk-comparison-${countryNames[countryA]}-vs-${countryNames[countryB]}-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Show success feedback
+    const exportBtn = document.getElementById('export-bulk-csv');
+    const originalText = exportBtn.textContent;
+    exportBtn.textContent = '✅ Exported!';
+    exportBtn.style.background = '#28a745';
+    
+    setTimeout(() => {
+        exportBtn.textContent = originalText;
+        exportBtn.style.background = '';
+    }, 2000);
+}
+
+// Save/Load comparison functions
+function openSaveLoadModal(mode) {
+    const modal = document.getElementById('save-load-modal');
+    const title = document.getElementById('save-load-title');
+    const saveSection = document.getElementById('save-section');
+    const loadSection = document.getElementById('load-section');
+    
+    if (mode === 'save') {
+        title.textContent = '💾 Save Comparison';
+        saveSection.style.display = 'block';
+        loadSection.style.display = 'none';
+        
+        if (!currentProduct || !selectedCountryA || !selectedCountryB) {
+            alert('Please complete a comparison before saving');
+            return;
+        }
+    } else {
+        title.textContent = '📂 Load Comparison';
+        saveSection.style.display = 'none';
+        loadSection.style.display = 'block';
+        loadSavedComparisons();
+    }
+    
+    modal.style.display = 'block';
+}
+
+function saveCurrentComparison() {
+    const name = document.getElementById('comparison-name').value.trim();
+    if (!name) {
+        alert('Please enter a name for the comparison');
+        return;
+    }
+    
+    if (!currentProduct || !selectedCountryA || !selectedCountryB) {
+        alert('Please complete a comparison before saving');
+        return;
+    }
+    
+    const comparison = {
+        id: Date.now(),
+        name: name,
+        timestamp: new Date().toISOString(),
+        product: Object.keys(products).find(key => products[key] === currentProduct),
+        category: selectedCategory,
+        countryA: selectedCountryA,
+        countryB: selectedCountryB,
+        countryACost: countryACost,
+        countryBCost: countryBCost
+    };
+    
+    // Get existing comparisons from localStorage
+    let savedComparisons = JSON.parse(localStorage.getItem('tariffComparisons') || '[]');
+    
+    // Add new comparison
+    savedComparisons.push(comparison);
+    
+    // Save to localStorage
+    localStorage.setItem('tariffComparisons', JSON.stringify(savedComparisons));
+    
+    // Show success message
+    alert('Comparison saved successfully!');
+    
+    // Clear input and close modal
+    document.getElementById('comparison-name').value = '';
+    document.getElementById('save-load-modal').style.display = 'none';
+}
+
+function loadSavedComparisons() {
+    const savedComparisons = JSON.parse(localStorage.getItem('tariffComparisons') || '[]');
+    const container = document.getElementById('saved-comparisons');
+    
+    if (savedComparisons.length === 0) {
+        container.innerHTML = '<p>No saved comparisons found.</p>';
+        return;
+    }
+    
+    container.innerHTML = savedComparisons.map(comparison => `
+        <div class="saved-comparison-item">
+            <div class="comparison-info">
+                <div class="comparison-name">${comparison.name}</div>
+                <div class="comparison-details">
+                    ${comparison.product} • ${countryNames[comparison.countryA]} vs ${countryNames[comparison.countryB]} • 
+                    ${new Date(comparison.timestamp).toLocaleDateString()}
+                </div>
+            </div>
+            <div class="comparison-actions">
+                <button class="load-btn" onclick="loadComparison(${comparison.id})">Load</button>
+                <button class="delete-btn" onclick="deleteComparison(${comparison.id})">Delete</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadComparison(id) {
+    const savedComparisons = JSON.parse(localStorage.getItem('tariffComparisons') || '[]');
+    const comparison = savedComparisons.find(c => c.id === id);
+    
+    if (!comparison) {
+        alert('Comparison not found');
+        return;
+    }
+    
+    // Set the product
+    document.getElementById('product-selector').value = comparison.product;
+    selectProduct(comparison.product);
+    
+    // Set the category
+    selectCategory(comparison.category);
+    
+    // Set the countries
+    selectCountryForComparison(comparison.countryA, 'a');
+    selectCountryForComparison(comparison.countryB, 'b');
+    
+    // Close modal
+    document.getElementById('save-load-modal').style.display = 'none';
+    
+    // Show success message
+    alert('Comparison loaded successfully!');
+}
+
+function deleteComparison(id) {
+    if (!confirm('Are you sure you want to delete this comparison?')) {
+        return;
+    }
+    
+    let savedComparisons = JSON.parse(localStorage.getItem('tariffComparisons') || '[]');
+    savedComparisons = savedComparisons.filter(c => c.id !== id);
+    
+    localStorage.setItem('tariffComparisons', JSON.stringify(savedComparisons));
+    
+    // Refresh the display
+    loadSavedComparisons();
+}
+
+// Product search and filter functions
+function getActiveFilter() {
+    const activeBtn = document.querySelector('.filter-btn.active');
+    return activeBtn ? activeBtn.dataset.category : 'all';
+}
+
+function filterProducts(searchText, category) {
+    const productSelector = document.getElementById('product-selector');
+    const options = productSelector.querySelectorAll('option');
+    
+    options.forEach(option => {
+        if (option.value === '') {
+            // Keep the placeholder option
+            option.style.display = 'block';
+            return;
+        }
+        
+        const productName = option.textContent.toLowerCase();
+        const productCategory = option.dataset.category;
+        
+        const matchesSearch = searchText === '' || productName.includes(searchText.toLowerCase());
+        const matchesCategory = category === 'all' || productCategory === category;
+        
+        if (matchesSearch && matchesCategory) {
+            option.style.display = 'block';
+        } else {
+            option.style.display = 'none';
+        }
+    });
 }
 
 // Portfolio Management

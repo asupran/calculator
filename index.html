@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tariff Calculator</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     
@@ -21,16 +22,25 @@
             <div class="calculator-form">
                 <div class="simple-selector">
                     <h3>Step 1: Choose Your Product</h3>
+                    <div class="product-search-container">
+                        <input type="text" id="product-search" placeholder="Search products..." class="product-search-input">
+                        <div class="filter-buttons">
+                            <button type="button" class="filter-btn active" data-category="all">All</button>
+                            <button type="button" class="filter-btn" data-category="speakers">Speakers</button>
+                            <button type="button" class="filter-btn" data-category="iport">Electronics</button>
+                            <button type="button" class="filter-btn" data-category="amplifiers">Amplifiers</button>
+                        </div>
+                    </div>
                     <select id="product-selector" class="large-select">
                         <option value="">Choose a product to analyze...</option>
-                        <option value="VX62R">VX62R Speakers ($550 MSRP)</option>
-                        <option value="IS6">IS6 Speakers ($1,515 MSRP)</option>
-                        <option value="PS-C63RT WHITE EA">PS-C63RT Speakers ($235 MSRP)</option>
-                        <option value="CONNECT PRO MINI CASE">Connect Pro Mini Case ($300 MSRP)</option>
-                        <option value="C-PRO UTILITY CASE 11PRO M4 GN">C-Pro Utility Case ($250 MSRP)</option>
-                        <option value="CONNECT MOUNT Case iPad A16 BK">Connect Mount Case ($125 MSRP)</option>
-                        <option value="UA 2-125 DSP AMPLIFIER">UA 2-125 DSP Amplifier ($1,100 MSRP)</option>
-                        <option value="DSP 8-130 MKIII">DSP 8-130 MKIII ($3,740 MSRP)</option>
+                        <option value="VX62R" data-category="speakers">VX62R Speakers ($550 MSRP)</option>
+                        <option value="IS6" data-category="speakers">IS6 Speakers ($1,515 MSRP)</option>
+                        <option value="PS-C63RT WHITE EA" data-category="speakers">PS-C63RT Speakers ($235 MSRP)</option>
+                        <option value="CONNECT PRO MINI CASE" data-category="iport">Connect Pro Mini Case ($300 MSRP)</option>
+                        <option value="C-PRO UTILITY CASE 11PRO M4 GN" data-category="iport">C-Pro Utility Case ($250 MSRP)</option>
+                        <option value="CONNECT MOUNT Case iPad A16 BK" data-category="iport">Connect Mount Case ($125 MSRP)</option>
+                        <option value="UA 2-125 DSP AMPLIFIER" data-category="amplifiers">UA 2-125 DSP Amplifier ($1,100 MSRP)</option>
+                        <option value="DSP 8-130 MKIII" data-category="amplifiers">DSP 8-130 MKIII ($3,740 MSRP)</option>
                     </select>
                 </div>
                 
@@ -92,6 +102,31 @@
 
                 <div id="results-simple" class="results-simple" style="display: none;">
                     <h3>💰 Your Cost Comparison Results</h3>
+                    
+                    <div class="quick-insights" id="quick-insights">
+                        <div class="insight-card winner-card">
+                            <div class="insight-icon">🏆</div>
+                            <div class="insight-content">
+                                <h4 id="winner-country">Best Option</h4>
+                                <p id="winner-savings">$0 savings per unit</p>
+                            </div>
+                        </div>
+                        <div class="insight-card cost-card">
+                            <div class="insight-icon">💲</div>
+                            <div class="insight-content">
+                                <h4 id="cost-range">Cost Range</h4>
+                                <p id="cost-spread">$0 - $0</p>
+                            </div>
+                        </div>
+                        <div class="insight-card margin-card">
+                            <div class="insight-icon">📈</div>
+                            <div class="insight-content">
+                                <h4 id="margin-impact">Margin Impact</h4>
+                                <p id="margin-change">0% difference</p>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="impact-summary">
                         <div class="cost-breakdown">
                             <div class="cost-row">
@@ -109,6 +144,13 @@
                         </div>
                         
                     </div>
+                        
+                        <div class="visual-comparison">
+                            <h4>📊 Visual Cost Comparison</h4>
+                            <div class="chart-container">
+                                <canvas id="costComparisonChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
                         
                         <div class="quick-scenarios">
                             <h4>📊 Compare Top Countries - Total Cost Breakdown</h4>
@@ -228,6 +270,12 @@
                         
                         <div class="pricing-strategy" id="pricing-strategy">
                             <h4>🎯 Pricing Strategy vs China Baseline</h4>
+                            <div class="export-buttons" style="text-align: right; margin-bottom: 10px;">
+                                <button type="button" class="strategy-btn" id="save-comparison" title="Save current comparison">💾 Save Comparison</button>
+                                <button type="button" class="strategy-btn" id="load-comparison" title="Load saved comparison">📂 Load Comparison</button>
+                                <button type="button" class="strategy-btn" id="export-csv" title="Export comparison to CSV">📊 Export to CSV</button>
+                                <button type="button" class="strategy-btn" id="bulk-compare" title="Compare all products">📋 Compare All Products</button>
+                            </div>
                             <div class="country-comparison" id="country-comparison" style="display: none;">
                                 <div class="comparison-cards">
                                     <div class="comparison-card country-a">
@@ -411,6 +459,66 @@
         <footer>
             <p>⚠️ This calculator provides estimates based on general tariff rates. Consult official trade authorities for precise calculations.</p>
         </footer>
+    </div>
+
+    <!-- Bulk Comparison Modal -->
+    <div id="bulk-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📋 Bulk Product Comparison</h3>
+                <span class="modal-close" id="close-bulk-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="bulk-filters">
+                    <label>
+                        <span>Countries to Compare:</span>
+                        <select id="bulk-country-a">
+                            <option value="china">🇨🇳 China</option>
+                            <option value="vietnam">🇻🇳 Vietnam</option>
+                            <option value="malaysia">🇲🇾 Malaysia</option>
+                            <option value="thailand">🇹🇭 Thailand</option>
+                            <option value="indonesia">🇮🇩 Indonesia</option>
+                            <option value="cambodia">🇰🇭 Cambodia</option>
+                        </select>
+                    </label>
+                    <span style="margin: 0 10px;">vs</span>
+                    <label>
+                        <select id="bulk-country-b">
+                            <option value="vietnam" selected>🇻🇳 Vietnam</option>
+                            <option value="china">🇨🇳 China</option>
+                            <option value="malaysia">🇲🇾 Malaysia</option>
+                            <option value="thailand">🇹🇭 Thailand</option>
+                            <option value="indonesia">🇮🇩 Indonesia</option>
+                            <option value="cambodia">🇰🇭 Cambodia</option>
+                        </select>
+                    </label>
+                    <button type="button" class="strategy-btn" id="run-bulk-comparison">Calculate All</button>
+                    <button type="button" class="strategy-btn" id="export-bulk-csv">Export Results</button>
+                </div>
+                <div id="bulk-results" class="bulk-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save/Load Comparison Modal -->
+    <div id="save-load-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="save-load-title">💾 Save/Load Comparison</h3>
+                <span class="modal-close" id="close-save-load-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="save-section" class="save-section">
+                    <h4>Save Current Comparison</h4>
+                    <input type="text" id="comparison-name" placeholder="Enter comparison name..." class="comparison-name-input">
+                    <button type="button" class="strategy-btn" id="save-comparison-btn">Save</button>
+                </div>
+                <div id="load-section" class="load-section">
+                    <h4>Load Saved Comparison</h4>
+                    <div id="saved-comparisons" class="saved-comparisons"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="script-simple.js"></script>
